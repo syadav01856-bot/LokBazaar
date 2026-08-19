@@ -1,845 +1,1026 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LokBazaar Admin Panel</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LokBazaar Admin Panel</title>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    :root {
-      --primary: #9333ea;
-      --primary-dark: #7e22ce;
-      --success: #10b981;
-      --danger: #ef4444;
-      --warning: #f59e0b;
-      --bg: #f1f5f9;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --radius: 16px;
-    }
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f1f5f9;
+  color:#0f172a;
+}
+header{
+  background:linear-gradient(135deg,#9333ea,#6366f1);
+  color:white;
+  padding:18px;
+}
+header h1{margin:0;font-size:22px}
+header p{margin:5px 0 0;font-size:12px;opacity:.85}
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-    }
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:18px;
+}
 
-    body {
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+.card{
+  background:white;
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:18px;
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
 
-    button {
-      border: none;
-      cursor: pointer;
-      font-weight: 700;
-    }
+input,select,textarea{
+  width:100%;
+  padding:11px;
+  margin:6px 0 10px;
+  border:1px solid #cbd5e1;
+  border-radius:8px;
+  font-size:14px;
+}
 
-    header {
-      background: linear-gradient(135deg, #9333ea, #6366f1);
-      color: white;
-      padding: 16px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 4px 20px rgba(0,0,0,.15);
-    }
+button{
+  border:0;
+  border-radius:8px;
+  padding:10px 15px;
+  cursor:pointer;
+  font-weight:700;
+}
 
-    .header-inner {
-      max-width: 1000px;
-      margin: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-    }
+.primary{background:#9333ea;color:white}
+.success{background:#10b981;color:white}
+.danger{background:#ef4444;color:white}
+.dark{background:#0f172a;color:white}
 
-    .logo-title { font-size: 21px; font-weight: 800; }
-    .logo-sub { font-size: 11px; opacity: .8; margin-top: 3px; }
+.tabs{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  margin-bottom:18px;
+}
 
-    .logout-btn {
-      background: rgba(255,255,255,.2);
-      color: white;
-      padding: 9px 13px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+.tab{
+  background:white;
+  color:#475569;
+  white-space:nowrap;
+}
 
-    .container {
-      width: 100%;
-      max-width: 1000px;
-      margin: auto;
-      padding: 20px;
-    }
+.tab.active{
+  background:#9333ea;
+  color:white;
+}
 
-    #loginSection {
-      max-width: 430px;
-      margin: 70px auto;
-      padding: 20px;
-    }
+.section{display:none}
+.section.active{display:block}
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.06);
-      margin-bottom: 20px;
-    }
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
 
-    .login-icon {
-      width: 55px;
-      height: 55px;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f3e8ff;
-      color: var(--primary);
-      margin-bottom: 15px;
-    }
+th,td{
+  text-align:left;
+  padding:10px;
+  border-bottom:1px solid #e2e8f0;
+}
 
-    .card-title { font-size: 19px; font-weight: 800; margin-bottom: 5px; }
-    .card-sub { font-size: 12px; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+th{
+  background:#f8fafc;
+}
 
-    .input {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      font-size: 14px;
-      outline: none;
-      margin-bottom: 11px;
-    }
+.status{
+  padding:10px;
+  border-radius:8px;
+  background:#f8fafc;
+  margin-bottom:15px;
+  font-size:13px;
+}
 
-    .input:focus { border-color: var(--primary); }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px;
+}
 
-    .btn {
-      padding: 12px 16px;
-      border-radius: 11px;
-      font-size: 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
+.stat{
+  background:white;
+  padding:18px;
+  border-radius:14px;
+  box-shadow:0 3px 12px rgba(0,0,0,.06);
+}
 
-    .btn-full { width: 100%; }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: var(--primary-dark); }
-    .btn-success { background: var(--success); color: white; }
-    .btn-danger { background: var(--danger); color: white; }
-    .btn-gray { background: #e2e8f0; color: #0f172a; }
+.stat b{
+  display:block;
+  font-size:24px;
+  margin-top:6px;
+}
 
-    .message {
-      text-align: center;
-      font-size: 13px;
-      font-weight: 700;
-      margin-top: 12px;
-      line-height: 1.5;
-    }
+.hidden{display:none!important}
 
-    #adminApp { display: none; }
+.small{
+  font-size:12px;
+  color:#64748b;
+}
 
-    .welcome {
-      background: linear-gradient(135deg, #9333ea, #6366f1);
-      color: white;
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 18px;
-    }
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
 
-    .welcome-title { font-size: 20px; font-weight: 800; }
-    .welcome-sub { font-size: 12px; opacity: .85; margin-top: 5px; }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .stat {
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      padding: 16px;
-    }
-
-    .stat-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: #f3e8ff;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-
-    .stat-number { font-size: 23px; font-weight: 800; }
-    .stat-label { font-size: 12px; color: var(--muted); margin-top: 3px; }
-
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .section-title { font-size: 18px; font-weight: 800; }
-    .section-sub { font-size: 11px; color: var(--muted); }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-
-    .full { grid-column: 1 / -1; }
-    textarea.input { min-height: 90px; resize: vertical; }
-
-    .form-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 5px;
-    }
-
-    .items { margin-top: 20px; }
-
-    .item {
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      padding: 14px;
-      margin-bottom: 10px;
-      background: #fff;
-    }
-
-    .item-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-    }
-
-    .item-name { font-size: 15px; font-weight: 800; }
-    .item-price { font-size: 15px; font-weight: 800; color: #059669; }
-    .item-details { font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 6px; }
-
-    .badge {
-      display: inline-block;
-      background: #f3e8ff;
-      color: var(--primary);
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 10px;
-      font-weight: 700;
-      margin-top: 8px;
-    }
-
-    .item-actions {
-      display: flex;
-      gap: 7px;
-      margin-top: 12px;
-      flex-wrap: wrap;
-    }
-
-    .small-btn { padding: 8px 11px; border-radius: 8px; font-size: 12px; }
-    .empty { color: var(--muted); text-align: center; padding: 20px; font-size: 13px; }
-    .loading { color: var(--muted); font-size: 13px; padding: 15px 0; }
-    .hidden { display: none !important; }
-
-    @media(max-width:650px) {
-      .container { padding: 14px; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      .form-grid { grid-template-columns: 1fr; }
-      .full { grid-column: auto; }
-      .header-inner { align-items: flex-start; }
-      .logo-title { font-size: 18px; }
-    }
-  </style>
+@media(max-width:600px){
+  .container{padding:12px}
+  table{font-size:11px}
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <div class="header-inner">
-    <div>
-      <div class="logo-title">🛍️ LokBazaar Admin</div>
-      <div class="logo-sub">Products • Stores • Inventory Management</div>
-    </div>
-    <button class="logout-btn" onclick="logout()">
-      <i data-lucide="log-out" size="15"></i> Logout
-    </button>
-  </div>
+  <h1>LokBazaar Admin Panel</h1>
+  <p>Merchant • Store • Products • Orders • Delivery • Stories</p>
 </header>
 
-<section id="loginSection">
-  <div class="card">
-    <div class="login-icon">
-      <i data-lucide="shield-check" size="28"></i>
-    </div>
-    <div class="card-title">Admin Login</div>
-    <div class="card-sub">अपने registered admin Email से OTP लेकर Admin Panel में प्रवेश करें।</div>
+<div class="container">
 
-    <div id="loginStep1">
-      <input id="adminEmail" class="input" type="email" placeholder="Admin Email" autocomplete="email">
-      <button class="btn btn-primary btn-full" onclick="sendAdminOTP()">
-        <i data-lucide="mail" size="16"></i> OTP भेजें
-      </button>
-    </div>
+<!-- LOGIN -->
+<div id="loginBox" class="card">
+  <h2>Admin Login</h2>
+  <p class="small">Login with your registered email OTP.</p>
 
-    <div id="loginStep2" class="hidden">
-      <input id="adminOTP" class="input" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit OTP" autocomplete="one-time-code">
-      <button class="btn btn-success btn-full" onclick="verifyAdminOTP()">
-        <i data-lucide="check-circle" size="16"></i> Verify & Login
-      </button>
-      <button class="btn btn-gray btn-full" style="margin-top:8px;" onclick="backToEmail()">
-        वापस Email बदलें
-      </button>
-    </div>
+  <input
+    id="adminEmail"
+    type="email"
+    placeholder="Admin Email"
+  >
 
-    <div id="loginMsg" class="message"></div>
+  <button class="primary" onclick="sendOTP()">
+    Send OTP
+  </button>
+
+  <div id="otpArea" class="hidden">
+    <input
+      id="adminOTP"
+      type="text"
+      maxlength="6"
+      placeholder="6-digit OTP"
+    >
+
+    <button class="success" onclick="verifyOTP()">
+      Verify & Login
+    </button>
   </div>
-</section>
 
-<div id="adminApp">
-  <main class="container">
-    <div class="welcome">
-      <div class="welcome-title">👋 Welcome to LokBazaar Admin</div>
-      <div class="welcome-sub" id="adminEmailDisplay">Admin account</div>
+  <div id="loginMsg" class="status"></div>
+</div>
+
+
+<!-- ADMIN APP -->
+<div id="adminApp" class="hidden">
+
+  <div class="card">
+    <div class="actions">
+      <strong id="adminEmailText"></strong>
+      <button class="danger" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+
+  <!-- TABS -->
+  <div class="tabs">
+
+    <button class="tab active" onclick="showTab('dashboard',this)">
+      Dashboard
+    </button>
+
+    <button class="tab" onclick="showTab('merchants',this)">
+      Merchants
+    </button>
+
+    <button class="tab" onclick="showTab('stores',this)">
+      Stores
+    </button>
+
+    <button class="tab" onclick="showTab('products',this)">
+      Products
+    </button>
+
+    <button class="tab" onclick="showTab('orders',this)">
+      Orders
+    </button>
+
+    <button class="tab" onclick="showTab('delivery',this)">
+      Delivery
+    </button>
+
+    <button class="tab" onclick="showTab('stories',this)">
+      Stories
+    </button>
+
+  </div>
+
+
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="section active">
+
+    <div class="grid">
+
+      <div class="stat">
+        Merchants
+        <b id="merchantCount">0</b>
+      </div>
+
+      <div class="stat">
+        Stores
+        <b id="storeCount">0</b>
+      </div>
+
+      <div class="stat">
+        Products
+        <b id="productCount">0</b>
+      </div>
+
+      <div class="stat">
+        Orders
+        <b id="orderCount">0</b>
+      </div>
+
+      <div class="stat">
+        Deliveries
+        <b id="deliveryCount">0</b>
+      </div>
+
+      <div class="stat">
+        Stories
+        <b id="storyCount">0</b>
+      </div>
+
     </div>
 
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-icon"><i data-lucide="package" size="20"></i></div>
-        <div class="stat-number" id="productCount">0</div>
-        <div class="stat-label">Total Products</div>
-      </div>
-      <div class="stat">
-        <div class="stat-icon"><i data-lucide="store" size="20"></i></div>
-        <div class="stat-number" id="storeCount">0</div>
-        <div class="stat-label">Total Stores</div>
-      </div>
-      <div class="stat">
-        <div class="stat-icon"><i data-lucide="shield-check" size="20"></i></div>
-        <div class="stat-number">✓</div>
-        <div class="stat-label">Admin Verified</div>
-      </div>
-    </div>
+  </section>
 
-    <section class="card">
-      <div class="section-header">
-        <div>
-          <div class="section-title">📦 Product Management</div>
-          <div class="section-sub">Product add, edit और delete करें</div>
-        </div>
-      </div>
 
-      <input type="hidden" id="productId">
+  <!-- MERCHANTS -->
+  <section id="merchants" class="section">
 
-      <div class="form-grid">
-        <div><input id="productName" class="input" placeholder="Product Name"></div>
-        <div><input id="productPrice" class="input" type="number" min="0" placeholder="Price ₹"></div>
-        <div>
-          <select id="productCategory" class="input">
-            <option value="Women Fashion">Women Fashion</option>
-            <option value="Men Fashion">Men Fashion</option>
-            <option value="Footwear">Footwear</option>
-            <option value="Furniture">Furniture</option>
-            <option value="Home Decor">Home Decor</option>
-          </select>
-        </div>
-        <div><input id="productImage" class="input" placeholder="Image URL (optional)"></div>
-        <div class="full">
-          <textarea id="productDescription" class="input" placeholder="Product Description"></textarea>
-        </div>
-      </div>
+    <div class="card">
+      <h2>Add Merchant</h2>
 
-      <div class="form-actions">
-        <button class="btn btn-primary" onclick="saveProduct()">
-          <i data-lucide="save" size="16"></i>
-          <span id="productSaveText">Product Save करें</span>
-        </button>
-        <button class="btn btn-gray" onclick="clearProductForm()">Clear</button>
-      </div>
+      <input id="merchantBusiness" placeholder="Business Name">
+      <input id="merchantOwner" placeholder="Owner Name">
+      <input id="merchantPhone" placeholder="Phone">
+      <input id="merchantEmail" placeholder="Email">
+      <input id="merchantCity" placeholder="City">
 
-      <div class="items">
-        <div id="productsList" class="loading">Products load हो रहे हैं...</div>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="section-header">
-        <div>
-          <div class="section-title">🏪 Store Management</div>
-          <div class="section-sub">Store add, edit और delete करें</div>
-        </div>
-      </div>
-
-      <input type="hidden" id="storeId">
-
-      <div class="form-grid">
-        <div><input id="storeName" class="input" placeholder="Store Name"></div>
-        <div><input id="storeRadius" class="input" type="number" min="0" step="0.1" placeholder="Delivery Radius KM"></div>
-        <div class="full"><input id="storeAddress" class="input" placeholder="Store Address"></div>
-        <div><input id="storeLatitude" class="input" type="number" step="any" placeholder="Latitude (optional)"></div>
-        <div><input id="storeLongitude" class="input" type="number" step="any" placeholder="Longitude (optional)"></div>
-      </div>
-
-      <div class="form-actions">
-        <button class="btn btn-primary" onclick="saveStore()">
-          <i data-lucide="save" size="16"></i>
-          <span id="storeSaveText">Store Save करें</span>
-        </button>
-        <button class="btn btn-gray" onclick="clearStoreForm()">Clear</button>
-      </div>
-
-      <div class="items">
-        <div id="storesList" class="loading">Stores load हो रहे हैं...</div>
-      </div>
-    </section>
-
-    <section class="card">
-      <button class="btn btn-gray btn-full" onclick="refreshDashboard()">
-        <i data-lucide="refresh-cw" size="16"></i> Dashboard Refresh करें
+      <button class="primary" onclick="addMerchant()">
+        Add Merchant
       </button>
-    </section>
-  </main>
     </div>
+
+    <div class="card">
+      <h2>Merchants</h2>
+      <div id="merchantTable"></div>
+    </div>
+
+  </section>
+
+
+  <!-- STORES -->
+  <section id="stores" class="section">
+
+    <div class="card">
+      <h2>Add Store</h2>
+
+      <input id="storeName" placeholder="Store Name">
+      <input id="storeAddress" placeholder="Address">
+      <input id="storeCity" placeholder="City">
+      <input id="storePincode" placeholder="Pincode">
+      <input id="storeRadius" type="number" value="10" placeholder="Delivery Radius KM">
+
+      <button class="primary" onclick="addStore()">
+        Add Store
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>Stores</h2>
+      <div id="storeTable"></div>
+    </div>
+
+  </section>
+
+
+  <!-- PRODUCTS -->
+  <section id="products" class="section">
+
+    <div class="card">
+      <h2>Add Product</h2>
+
+      <input id="productName" placeholder="Product Name">
+
+      <textarea
+        id="productDescription"
+        placeholder="Description"
+      ></textarea>
+
+      <input id="productCategory" placeholder="Category">
+
+      <input
+        id="productPrice"
+        type="number"
+        placeholder="Price"
+      >
+
+      <input
+        id="productMRP"
+        type="number"
+        placeholder="MRP"
+      >
+
+      <input
+        id="productStock"
+        type="number"
+        placeholder="Stock"
+      >
+
+      <button class="primary" onclick="addProduct()">
+        Add Product
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>Products</h2>
+      <div id="productTable"></div>
+    </div>
+
+  </section>
+
+
+  <!-- ORDERS -->
+  <section id="orders" class="section">
+
+    <div class="card">
+      <h2>Orders</h2>
+      <button class="dark" onclick="loadOrders()">Refresh Orders</button>
+      <div id="orderTable"></div>
+    </div>
+
+  </section>
+
+
+  <!-- DELIVERY -->
+  <section id="delivery" class="section">
+
+    <div class="card">
+      <h2>Delivery</h2>
+      <button class="dark" onclick="loadDelivery()">Refresh Delivery</button>
+      <div id="deliveryTable"></div>
+    </div>
+
+  </section>
+
+
+  <!-- STORIES -->
+  <section id="stories" class="section">
+
+    <div class="card">
+      <h2>Add Story</h2>
+
+      <input id="storyTitle" placeholder="Story Title">
+
+      <textarea
+        id="storyDescription"
+        placeholder="Story Description"
+      ></textarea>
+
+      <input
+        id="storyImage"
+        placeholder="Image URL"
+      >
+
+      <button class="primary" onclick="addStory()">
+        Add Story
+      </button>
+    </div>
+
+    <div class="card">
+      <h2>Stories</h2>
+      <div id="storyTable"></div>
+    </div>
+
+  </section>
+
+</div>
+</div>
+
 
 <script>
+
 /* =====================================================
    SUPABASE CONFIG
 ===================================================== */
-const SUPABASE_URL = 'https://oehwcamwefkngwbcxnlq.supabase.co';
-const SUPABASE_ANON_KEY = 'Sb_publishable_4nRNt9HwR8oVK_cGOOSD_g_BgpgyIBj';
 
-const supabaseClient = supabase.createClient(
+const SUPABASE_URL =
+'https://oehwcamwefkngwbcxnlq.supabase.co';
+
+const SUPABASE_ANON_KEY =
+'Sb_publishable_4nRNt9HwR8oVK_cGOOSD_g_BgpgyIBj';
+
+const supabaseClient =
+supabase.createClient(
   SUPABASE_URL,
   SUPABASE_ANON_KEY
 );
 
-/* =====================================================
-   GLOBAL
-===================================================== */
-let currentUser = null;
-let productsCache = [];
-let storesCache = [];
 
 /* =====================================================
-   INITIALIZE ICONS
+   LOGIN
 ===================================================== */
-lucide.createIcons();
 
-/* =====================================================
-   MESSAGE
-===================================================== */
-function setLoginMessage(text, color = '#9333ea') {
-  const msg = document.getElementById('loginMsg');
-  msg.style.color = color;
-  msg.innerText = text;
-}
+async function sendOTP(){
 
-/* =====================================================
-   SEND ADMIN OTP
-===================================================== */
-async function sendAdminOTP() {
-  const email = document.getElementById('adminEmail').value.trim();
+  const email =
+    document.getElementById('adminEmail').value.trim();
 
-  if (!email || !email.includes('@')) {
-    setLoginMessage('कृपया सही Email ID डालें।', '#ef4444');
+  const msg =
+    document.getElementById('loginMsg');
+
+  if(!email){
+    msg.innerText='Please enter your email.';
     return;
   }
 
-  setLoginMessage('OTP भेजा जा रहा है...', '#9333ea');
+  msg.innerText='Sending OTP...';
 
-  const { error } = await supabaseClient.auth.signInWithOtp({ email: email });
+  const {error} =
+    await supabaseClient.auth.signInWithOtp({
+      email:email
+    });
 
-  if (error) {
-    setLoginMessage('OTP Error: ' + error.message, '#ef4444');
+  if(error){
+    msg.innerText=error.message;
     return;
   }
 
-  document.getElementById('loginStep1').classList.add('hidden');
-  document.getElementById('loginStep2').classList.remove('hidden');
-  setLoginMessage(email + ' पर OTP भेज दिया गया है।', '#10b981');
+  document
+    .getElementById('otpArea')
+    .classList.remove('hidden');
+
+  msg.innerText='OTP sent to your email.';
 }
 
-/* =====================================================
-   BACK TO EMAIL
-===================================================== */
-function backToEmail() {
-  document.getElementById('loginStep2').classList.add('hidden');
-  document.getElementById('loginStep1').classList.remove('hidden');
-  document.getElementById('adminOTP').value = '';
-  setLoginMessage('');
-}
 
-/* =====================================================
-   VERIFY ADMIN OTP
-===================================================== */
-async function verifyAdminOTP() {
-  const email = document.getElementById('adminEmail').value.trim();
-  const token = document.getElementById('adminOTP').value.trim();
+async function verifyOTP(){
 
-  if (!token || token.length !== 6) {
-    setLoginMessage('6-digit OTP दर्ज करें।', '#ef4444');
+  const email =
+    document.getElementById('adminEmail').value.trim();
+
+  const token =
+    document.getElementById('adminOTP').value.trim();
+
+  const msg =
+    document.getElementById('loginMsg');
+
+  const {data,error} =
+    await supabaseClient.auth.verifyOtp({
+      email:email,
+      token:token,
+      type:'email'
+    });
+
+  if(error){
+    msg.innerText=error.message;
     return;
   }
 
-  setLoginMessage('OTP verify हो रहा है...', '#9333ea');
+  const user=data.user;
 
-  const { data, error } = await supabaseClient.auth.verifyOtp({
-    email: email,
-    token: token,
-    type: 'email'
+  const {data:admin,error:adminError} =
+    await supabaseClient
+      .from('admin_users')
+      .select('user_id')
+      .eq('user_id',user.id)
+      .maybeSingle();
+
+  if(adminError){
+    msg.innerText=adminError.message;
+    return;
+  }
+
+  if(!admin){
+    await supabaseClient.auth.signOut();
+
+    msg.innerText=
+      'This email is not registered as an admin.';
+
+    return;
+  }
+
+  document
+    .getElementById('loginBox')
+    .classList.add('hidden');
+
+  document
+    .getElementById('adminApp')
+    .classList.remove('hidden');
+
+  document
+    .getElementById('adminEmailText')
+    .innerText=user.email;
+
+  loadDashboard();
+}
+
+
+/* =====================================================
+   SESSION
+===================================================== */
+
+async function checkSession(){
+
+  const {
+    data:{session}
+  } = await supabaseClient.auth.getSession();
+
+  if(!session) return;
+
+  const user=session.user;
+
+  const {data:admin} =
+    await supabaseClient
+      .from('admin_users')
+      .select('user_id')
+      .eq('user_id',user.id)
+      .maybeSingle();
+
+  if(admin){
+
+    document
+      .getElementById('loginBox')
+      .classList.add('hidden');
+
+    document
+      .getElementById('adminApp')
+      .classList.remove('hidden');
+
+    document
+      .getElementById('adminEmailText')
+      .innerText=user.email;
+
+    loadDashboard();
+  }
+}
+
+
+async function logout(){
+
+  await supabaseClient.auth.signOut();
+
+  location.reload();
+}
+
+
+/* =====================================================
+   TABS
+===================================================== */
+
+function showTab(id,button){
+
+  document
+    .querySelectorAll('.section')
+    .forEach(x=>x.classList.remove('active'));
+
+  document
+    .querySelectorAll('.tab')
+    .forEach(x=>x.classList.remove('active'));
+
+  document
+    .getElementById(id)
+    .classList.add('active');
+
+  button.classList.add('active');
+
+  if(id==='dashboard') loadDashboard();
+  if(id==='merchants') loadMerchants();
+  if(id==='stores') loadStores();
+  if(id==='products') loadProducts();
+  if(id==='orders') loadOrders();
+  if(id==='delivery') loadDelivery();
+  if(id==='stories') loadStories();
+}
+
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+async function countTable(table,id){
+
+  const {count} =
+    await supabaseClient
+      .from(table)
+      .select('*',{count:'exact',head:true});
+
+  document.getElementById(id).innerText =
+    count || 0;
+}
+
+
+async function loadDashboard(){
+
+  await countTable('merchants','merchantCount');
+  await countTable('stores','storeCount');
+  await countTable('products','productCount');
+  await countTable('orders','orderCount');
+  await countTable('delivery','deliveryCount');
+  await countTable('stories','storyCount');
+}
+
+
+/* =====================================================
+   MERCHANTS
+===================================================== */
+
+async function addMerchant(){
+
+  const {error} =
+    await supabaseClient
+      .from('merchants')
+      .insert({
+        business_name:
+          document.getElementById('merchantBusiness').value,
+
+        owner_name:
+          document.getElementById('merchantOwner').value,
+
+        phone:
+          document.getElementById('merchantPhone').value,
+
+        email:
+          document.getElementById('merchantEmail').value,
+
+        city:
+          document.getElementById('merchantCity').value
+      });
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  alert('Merchant added successfully.');
+  loadMerchants();
+}
+
+
+async function loadMerchants(){
+
+  const {data,error} =
+    await supabaseClient
+      .from('merchants')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+  if(error){
+    document.getElementById('merchantTable').innerText=error.message;
+    return;
+  }
+
+  document.getElementById('merchantTable').innerHTML =
+    makeTable(data,[
+      'merchant_id',
+      'business_name',
+      'owner_name',
+      'phone',
+      'email',
+      'city',
+      'verified',
+      'active'
+    ]);
+}
+
+
+/* =====================================================
+   STORES
+===================================================== */
+
+async function addStore(){
+
+  const {error} =
+    await supabaseClient
+      .from('stores')
+      .insert({
+        store_name:
+          document.getElementById('storeName').value,
+
+        address:
+          document.getElementById('storeAddress').value,
+
+        city:
+          document.getElementById('storeCity').value,
+
+        pincode:
+          document.getElementById('storePincode').value,
+
+        service_radius_km:
+          Number(document.getElementById('storeRadius').value || 10)
+      });
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  alert('Store added successfully.');
+  loadStores();
+}
+
+
+async function loadStores(){
+
+  const {data,error} =
+    await supabaseClient
+      .from('stores')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+  if(error){
+    document.getElementById('storeTable').innerText=error.message;
+    return;
+  }
+
+  document.getElementById('storeTable').innerHTML =
+    makeTable(data,[
+      'store_id',
+      'store_name',
+      'address',
+      'city',
+      'pincode',
+      'service_radius_km',
+      'active'
+    ]);
+}
+
+
+/* =====================================================
+   PRODUCTS
+===================================================== */
+
+async function addProduct(){
+
+  const {error} =
+    await supabaseClient
+      .from('products')
+      .insert({
+
+        name:
+          document.getElementById('productName').value,
+
+        description:
+          document.getElementById('productDescription').value,
+
+        category:
+          document.getElementById('productCategory').value,
+
+        price:
+          Number(document.getElementById('productPrice').value || 0),
+
+        mrp:
+          Number(document.getElementById('productMRP').value || 0),
+
+        stock:
+          Number(document.getElementById('productStock').value || 0)
+
+      });
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  alert('Product added successfully.');
+  loadProducts();
+}
+
+
+async function loadProducts(){
+
+  const {data,error} =
+    await supabaseClient
+      .from('products')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+  if(error){
+    document.getElementById('productTable').innerText=error.message;
+    return;
+  }
+
+  document.getElementById('productTable').innerHTML =
+    makeTable(data,[
+      'product_id',
+      'name',
+      'category',
+      'price',
+      'mrp',
+      'stock',
+      'active'
+    ]);
+}
+
+
+/* =====================================================
+   ORDERS
+===================================================== */
+
+async function loadOrders(){
+
+  const {data,error} =
+    await supabaseClient
+      .from('orders')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+  if(error){
+    document.getElementById('orderTable').innerText=error.message;
+    return;
+  }
+
+  document.getElementById('orderTable').innerHTML =
+    makeTable(data,[
+      'order_id',
+      'user_id',
+      'merchant_id',
+      'store_id',
+      'total_amount',
+      'payment_status',
+      'order_status',
+      'created_at'
+    ]);
+}
+
+
+/* =====================================================
+   DELIVERY
+===================================================== */
+
+async function loadDelivery(){
+
+  const {data,error} =
+    await supabaseClient
+      .from('delivery')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+  if(error){
+    document.getElementById('deliveryTable').innerText=error.message;
+    return;
+  }
+
+  document.getElementById('deliveryTable').innerHTML =
+    makeTable(data,[
+      'delivery_id',
+      'order_id',
+      'merchant_id',
+      'store_id',
+      'delivery_partner',
+      'tracking_number',
+      'status',
+      'assigned_at',
+      'picked_up_at',
+      'delivered_at'
+    ]);
+}
+
+
+/* =====================================================
+   STORIES
+===================================================== */
+
+async function addStory(){
+
+  const {error} =
+    await supabaseClient
+      .from('stories')
+      .insert({
+
+        title:
+          document.getElementById('storyTitle').value,
+
+        description:
+          document.getElementById('storyDescription').value,
+
+        image_url:
+          document.getElementById('storyImage').value
+
+      });
+
+  if(error){
+    alert(error.message);
+    return;
+  }
+
+  alert('Story added successfully.');
+  loadStories();
+}
+
+
+async function loadStories(){
+
+  const {data,error} =
+    await supabaseClient
+      .from('stories')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+  if(error){
+    document.getElementById('storyTable').innerText=error.message;
+    return;
+  }
+
+  document.getElementById('storyTable').innerHTML =
+    makeTable(data,[
+      'story_id',
+      'title',
+      'description',
+      'image_url',
+      'active',
+      'expires_at',
+      'created_at'
+    ]);
+}
+
+
+/* =====================================================
+   TABLE RENDERER
+===================================================== */
+
+function makeTable(rows,columns){
+
+  if(!rows || rows.length===0){
+    return '<p class="small">No records found.</p>';
+  }
+
+  let html='<div style="overflow:auto"><table><thead><tr>';
+
+  columns.forEach(col=>{
+    html+=`<th>${col}</th>`;
   });
 
-  if (error) {
-    setLoginMessage('OTP Error: ' + error.message, '#ef4444');
-    return;
-  }
+  html+='</tr></thead><tbody>';
 
-  currentUser = data.user;
-  showAdminApp();
+  rows.forEach(row=>{
+
+    html+='<tr>';
+
+    columns.forEach(col=>{
+
+      let value=row[col];
+
+      if(value===null || value===undefined){
+        value='';
+      }
+
+      html+=`<td>${escapeHtml(String(value))}</td>`;
+
+    });
+
+    html+='</tr>';
+  });
+
+  html+='</tbody></table></div>';
+
+  return html;
 }
+
+
+function escapeHtml(value){
+
+  return value
+    .replaceAll('&','&amp;')
+    .replaceAll('<','&lt;')
+    .replaceAll('>','&gt;')
+    .replaceAll('"','&quot;')
+    .replaceAll("'","&#039;");
+}
+
 
 /* =====================================================
-   AUTH STATE & SESSION
+   START
 ===================================================== */
-async function checkSession() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
 
-  if (session && session.user) {
-    currentUser = session.user;
-    showAdminApp();
-  } else {
-    showLogin();
-  }
-}
+checkSession();
 
-function showLogin() {
-  document.getElementById('loginSection').classList.remove('hidden');
-  document.getElementById('adminApp').style.display = 'none';
-}
-
-function showAdminApp() {
-  document.getElementById('loginSection').classList.add('hidden');
-  document.getElementById('adminApp').style.display = 'block';
-
-  if (currentUser && currentUser.email) {
-    document.getElementById('adminEmailDisplay').innerText = currentUser.email;
-  }
-
-  refreshDashboard();
-}
-
-async function logout() {
-  await supabaseClient.auth.signOut();
-  currentUser = null;
-  showLogin();
-}
-
-/* =====================================================
-   DASHBOARD & DATA FETCH
-===================================================== */
-async function refreshDashboard() {
-  await Promise.all([
-    fetchProducts(),
-    fetchStores()
-  ]);
-  lucide.createIcons();
-}
-
-/* =====================================================
-   PRODUCTS LOGIC
-===================================================== */
-async function fetchProducts() {
-  const listEl = document.getElementById('productsList');
-  listEl.className = 'loading';
-  listEl.innerText = 'Products load हो रहे हैं...';
-
-  const { data, error } = await supabaseClient
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    listEl.className = 'empty';
-    listEl.innerText = 'Products load करने में त्रुटि: ' + error.message;
-    return;
-  }
-
-  productsCache = data || [];
-  document.getElementById('productCount').innerText = productsCache.length;
-  renderProducts();
-}
-
-function renderProducts() {
-  const listEl = document.getElementById('productsList');
-
-  if (productsCache.length === 0) {
-    listEl.className = 'empty';
-    listEl.innerText = 'कोई Products मौजूद नहीं हैं।';
-    return;
-  }
-
-  listEl.className = '';
-  listEl.innerHTML = productsCache.map(p => `
-    <div class="item">
-      <div class="item-top">
-        <div>
-          <div class="item-name">${escapeHtml(p.name || 'No Name')}</div>
-          <span class="badge">${escapeHtml(p.category || 'General')}</span>
-        </div>
-        <div class="item-price">₹${p.price || 0}</div>
-      </div>
-      <div class="item-details">
-        ${escapeHtml(p.description || 'कोई विवरण नहीं')}
-      </div>
-      <div class="item-actions">
-        <button class="btn btn-gray small-btn" onclick="editProduct('${p.id}')">
-          <i data-lucide="edit" size="13"></i> Edit
-        </button>
-        <button class="btn btn-danger small-btn" onclick="deleteProduct('${p.id}')">
-          <i data-lucide="trash-2" size="13"></i> Delete
-        </button>
-      </div>
-    </div>
-  `).join('');
-
-  lucide.createIcons();
-}
-
-async function saveProduct() {
-  const id = document.getElementById('productId').value;
-  const name = document.getElementById('productName').value.trim();
-  const price = parseFloat(document.getElementById('productPrice').value) || 0;
-  const category = document.getElementById('productCategory').value;
-  const image_url = document.getElementById('productImage').value.trim();
-  const description = document.getElementById('productDescription').value.trim();
-
-  if (!name) {
-    alert('कृपया Product Name दर्ज करें।');
-    return;
-  }
-
-  const payload = { name, price, category, image_url, description };
-  let error = null;
-
-  if (id) {
-    const res = await supabaseClient.from('products').update(payload).eq('id', id);
-    error = res.error;
-  } else {
-    const res = await supabaseClient.from('products').insert([payload]);
-    error = res.error;
-  }
-
-  if (error) {
-    alert('Error saving product: ' + error.message);
-    return;
-  }
-
-  clearProductForm();
-  fetchProducts();
-}
-
-function editProduct(id) {
-  const p = productsCache.find(item => item.id === id);
-  if (!p) return;
-
-  document.getElementById('productId').value = p.id;
-  document.getElementById('productName').value = p.name || '';
-  document.getElementById('productPrice').value = p.price || '';
-  document.getElementById('productCategory').value = p.category || 'Women Fashion';
-  document.getElementById('productImage').value = p.image_url || '';
-  document.getElementById('productDescription').value = p.description || '';
-  document.getElementById('productSaveText').innerText = 'Product Update करें';
-}
-
-async function deleteProduct(id) {
-  if (!confirm('क्या आप सच में यह Product हटाना चाहते हैं?')) return;
-
-  const { error } = await supabaseClient.from('products').delete().eq('id', id);
-
-  if (error) {
-    alert('Error deleting product: ' + error.message);
-    return;
-  }
-
-  fetchProducts();
-}
-
-function clearProductForm() {
-  document.getElementById('productId').value = '';
-  document.getElementById('productName').value = '';
-  document.getElementById('productPrice').value = '';
-  document.getElementById('productCategory').selectedIndex = 0;
-  document.getElementById('productImage').value = '';
-  document.getElementById('productDescription').value = '';
-  document.getElementById('productSaveText').innerText = 'Product Save करें';
-}
-
-/* =====================================================
-   STORES LOGIC
-===================================================== */
-async function fetchStores() {
-  const listEl = document.getElementById('storesList');
-  listEl.className = 'loading';
-  listEl.innerText = 'Stores load हो रहे हैं...';
-
-  const { data, error } = await supabaseClient
-    .from('stores')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    listEl.className = 'empty';
-    listEl.innerText = 'Stores load करने में त्रुटि: ' + error.message;
-    return;
-  }
-
-  storesCache = data || [];
-  document.getElementById('storeCount').innerText = storesCache.length;
-  renderStores();
-}
-
-function renderStores() {
-  const listEl = document.getElementById('storesList');
-
-  if (storesCache.length === 0) {
-    listEl.className = 'empty';
-    listEl.innerText = 'कोई Stores मौजूद नहीं हैं।';
-    return;
-  }
-
-  listEl.className = '';
-  listEl.innerHTML = storesCache.map(s => `
-    <div class="item">
-      <div class="item-top">
-        <div>
-          <div class="item-name">${escapeHtml(s.name || 'No Name')}</div>
-          <span class="badge">Radius: ${s.radius || 0} KM</span>
-        </div>
-      </div>
-      <div class="item-details">
-        📍 ${escapeHtml(s.address || 'कोई पता नहीं')}
-        ${s.latitude && s.longitude ? `<br>🌐 Lat: ${s.latitude}, Lng: ${s.longitude}` : ''}
-      </div>
-      <div class="item-actions">
-        <button class="btn btn-gray small-btn" onclick="editStore('${s.id}')">
-          <i data-lucide="edit" size="13"></i> Edit
-        </button>
-        <button class="btn btn-danger small-btn" onclick="deleteStore('${s.id}')">
-          <i data-lucide="trash-2" size="13"></i> Delete
-        </button>
-      </div>
-    </div>
-  `).join('');
-
-  lucide.createIcons();
-}
-
-async function saveStore() {
-  const id = document.getElementById('storeId').value;
-  const name = document.getElementById('storeName').value.trim();
-  const radius = parseFloat(document.getElementById('storeRadius').value) || 0;
-  const address = document.getElementById('storeAddress').value.trim();
-  const latitude = parseFloat(document.getElementById('storeLatitude').value) || null;
-  const longitude = parseFloat(document.getElementById('storeLongitude').value) || null;
-
-  if (!name) {
-    alert('कृपया Store Name दर्ज करें।');
-    return;
-  }
-
-  const payload = { name, radius, address, latitude, longitude };
-  let error = null;
-
-  if (id) {
-    const res = await supabaseClient.from('stores').update(payload).eq('id', id);
-    error = res.error;
-  } else {
-    const res = await supabaseClient.from('stores').insert([payload]);
-    error = res.error;
-  }
-
-  if (error) {
-    alert('Error saving store: ' + error.message);
-    return;
-  }
-
-  clearStoreForm();
-  fetchStores();
-}
-
-function editStore(id) {
-  const s = storesCache.find(item => item.id === id);
-  if (!s) return;
-
-  document.getElementById('storeId').value = s.id;
-  document.getElementById('storeName').value = s.name || '';
-  document.getElementById('storeRadius').value = s.radius || '';
-  document.getElementById('storeAddress').value = s.address || '';
-  document.getElementById('storeLatitude').value = s.latitude || '';
-  document.getElementById('storeLongitude').value = s.longitude || '';
-  document.getElementById('storeSaveText').innerText = 'Store Update करें';
-}
-
-async function deleteStore(id) {
-  if (!confirm('क्या आप सच में यह Store हटाना चाहते हैं?')) return;
-
-  const { error } = await supabaseClient.from('stores').delete().eq('id', id);
-
-  if (error) {
-    alert('Error deleting store: ' + error.message);
-    return;
-  }
-
-  fetchStores();
-}
-
-function clearStoreForm() {
-  document.getElementById('storeId').value = '';
-  document.getElementById('storeName').value = '';
-  document.getElementById('storeRadius').value = '';
-  document.getElementById('storeAddress').value = '';
-  document.getElementById('storeLatitude').value = '';
-  document.getElementById('storeLongitude').value = '';
-  document.getElementById('storeSaveText').innerText = 'Store Save करें';
-}
-
-/* =====================================================
-   HELPERS & INIT
-===================================================== */
-function escapeHtml(str) {
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  checkSession();
-});
 </script>
 
 </body>
-</html>
+      </html>
