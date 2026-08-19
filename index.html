@@ -1,72 +1,172 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LokBazaar</title>
+
+  <title>LokBazaar - Your Local Market</title>
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      background: #f7f7f7;
       color: #222;
     }
 
     header {
       background: #111827;
       color: white;
-      padding: 20px;
+      padding: 24px 18px;
       text-align: center;
     }
 
     header h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 32px;
     }
 
     header p {
-      margin: 8px 0 0;
+      margin: 7px 0 0;
+      font-size: 16px;
       color: #d1d5db;
     }
 
-    .search {
-      padding: 20px;
+    .hero {
+      background: white;
+      padding: 22px 18px;
+      text-align: center;
+    }
+
+    .hero h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .hero p {
+      margin: 0;
+      color: #666;
+    }
+
+    .search-box {
+      padding: 18px;
       background: white;
     }
 
-    .search input {
+    .search-box input {
       width: 100%;
-      box-sizing: border-box;
-      padding: 14px;
+      padding: 15px;
       border: 1px solid #ddd;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 16px;
+      outline: none;
     }
 
-    .content {
+    .container {
       padding: 20px;
     }
 
-    .welcome {
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .shop {
       background: white;
-      padding: 20px;
-      border-radius: 14px;
-      margin-bottom: 15px;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     }
 
-    .welcome h2 {
-      margin-top: 0;
+    .shop-name {
+      margin: 0;
+      font-size: 20px;
     }
 
-    .button {
+    .location {
+      margin-top: 6px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .shop-tag {
       display: inline-block;
+      margin-top: 10px;
+      padding: 5px 9px;
+      border-radius: 8px;
+      background: #ecfdf5;
+      color: #15803d;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .product {
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 12px;
+      background: #fafafa;
+    }
+
+    .product-name {
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .price {
+      margin-top: 7px;
+      color: #15803d;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .buy-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 9px;
+      border: 0;
+      border-radius: 9px;
       background: #16a34a;
       color: white;
-      padding: 12px 18px;
-      border-radius: 10px;
-      text-decoration: none;
-      border: none;
-      font-size: 16px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .buy-btn:active {
+      transform: scale(0.98);
+    }
+
+    .empty {
+      background: white;
+      padding: 30px 15px;
+      text-align: center;
+      border-radius: 14px;
+      color: #777;
+    }
+
+    footer {
+      text-align: center;
+      padding: 25px 15px;
+      color: #777;
+      font-size: 13px;
     }
   </style>
 </head>
@@ -75,20 +175,209 @@
 
   <header>
     <h1>LokBazaar</h1>
-    <p>दुनिया आपके पास</p>
+    <p>Your Local Market • आपके आसपास का बाज़ार</p>
   </header>
 
-  <div class="search">
-    <input type="text" placeholder="अपने आसपास खोजें...">
+  <section class="hero">
+    <h2>Everything Local, Right Near You</h2>
+    <p>अपने आसपास की shops और products आसानी से खोजें।</p>
+  </section>
+
+  <div class="search-box">
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="Search shops or products..."
+      oninput="showShops()"
+    >
   </div>
 
-  <div class="content">
-    <div class="welcome">
-      <h2>आपके लोकल मार्केट में स्वागत है</h2>
-      <p>अपने आसपास की दुकानें, सामान और सेवाएँ एक ही जगह खोजें।</p>
-      <button class="button">शुरू करें</button>
+  <main class="container">
+
+    <div class="section-title">
+      <h2>Nearby Shops</h2>
+      <span>आपके पास</span>
     </div>
-  </div>
+
+    <div id="shops"></div>
+
+  </main>
+
+  <footer>
+    © 2026 LokBazaar • Buy Local, Grow Local
+  </footer>
+
+
+  <script>
+
+    const shops = [
+
+      {
+        name: "Sharma Kirana Store",
+        location: "Main Market",
+        tag: "Grocery",
+        products: [
+          { name: "Rice 5 Kg", price: "₹320" },
+          { name: "Aata 5 Kg", price: "₹240" },
+          { name: "Sugar 1 Kg", price: "₹48" },
+          { name: "Mustard Oil 1 L", price: "₹145" }
+        ]
+      },
+
+      {
+        name: "Mohit Electronics",
+        location: "City Market",
+        tag: "Electronics",
+        products: [
+          { name: "Mobile Charger", price: "₹199" },
+          { name: "Earphones", price: "₹299" },
+          { name: "LED Bulb", price: "₹120" },
+          { name: "USB Cable", price: "₹99" }
+        ]
+      },
+
+      {
+        name: "Raju Fruits & Vegetables",
+        location: "Sabzi Mandi",
+        tag: "Fresh Market",
+        products: [
+          { name: "Potato 1 Kg", price: "₹30" },
+          { name: "Onion 1 Kg", price: "₹35" },
+          { name: "Tomato 1 Kg", price: "₹40" },
+          { name: "Apple 1 Kg", price: "₹120" }
+        ]
+      }
+
+    ];
+
+
+    function showShops() {
+
+      const search =
+        document
+          .getElementById("searchInput")
+          .value
+          .toLowerCase()
+          .trim();
+
+      const shopsBox =
+        document.getElementById("shops");
+
+      shopsBox.innerHTML = "";
+
+      let found = false;
+
+
+      shops.forEach(shop => {
+
+        const shopMatches =
+          shop.name.toLowerCase().includes(search) ||
+          shop.location.toLowerCase().includes(search) ||
+          shop.tag.toLowerCase().includes(search);
+
+
+        const matchingProducts =
+          shop.products.filter(product =>
+            product.name.toLowerCase().includes(search)
+          );
+
+
+        if (shopMatches || matchingProducts.length > 0) {
+
+          found = true;
+
+          const productsToShow =
+            search && !shopMatches
+              ? matchingProducts
+              : shop.products;
+
+
+          let productsHTML = "";
+
+
+          productsToShow.forEach(product => {
+
+            productsHTML += `
+              <div class="product">
+
+                <div class="product-name">
+                  ${product.name}
+                </div>
+
+                <div class="price">
+                  ${product.price}
+                </div>
+
+                <button
+                  class="buy-btn"
+                  onclick="contactSeller('${product.name}', '${shop.name}')"
+                >
+                  Contact Seller
+                </button>
+
+              </div>
+            `;
+
+          });
+
+
+          shopsBox.innerHTML += `
+            <div class="shop">
+
+              <h3 class="shop-name">
+                ${shop.name}
+              </h3>
+
+              <div class="location">
+                📍 ${shop.location}
+              </div>
+
+              <div class="shop-tag">
+                ${shop.tag}
+              </div>
+
+              <div class="products">
+                ${productsHTML}
+              </div>
+
+            </div>
+          `;
+
+        }
+
+      });
+
+
+      if (!found) {
+
+        shopsBox.innerHTML = `
+          <div class="empty">
+            <h3>No results found</h3>
+            <p>दूसरा shop या product search करके देखें।</p>
+          </div>
+        `;
+
+      }
+
+    }
+
+
+    function contactSeller(product, shop) {
+
+      alert(
+        "Product: " +
+        product +
+        "\nShop: " +
+        shop +
+        "\n\nNext step: हम यहाँ real seller contact और order system जोड़ेंगे।"
+      );
+
+    }
+
+
+    showShops();
+
+  </script>
 
 </body>
 </html>
