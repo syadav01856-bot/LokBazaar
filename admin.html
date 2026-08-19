@@ -3,293 +3,1062 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LokBazaar - Merchant Admin Portal</title>
-  
+  <title>LokBazaar - Fashion & Lifestyle Shopping</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     :root {
       --primary: #9333ea;
-      --bg: #f8fafc;
+      --primary-dark: #7e22ce;
+      --accent: #ff4757;
+      --success: #10b981;
+      --bg: #f1f5f9;
       --surface: #ffffff;
       --text-main: #0f172a;
       --text-muted: #64748b;
       --border: #e2e8f0;
-      --radius: 12px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: var(--bg); color: var(--text-main); padding-bottom: 50px; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      padding-bottom: 90px;
+    }
 
     header {
-      background: #0f172a;
+      background: linear-gradient(135deg, #9333ea, #6366f1);
       color: white;
       padding: 16px 20px;
-      display: flex; justify-content: space-between; align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
-    .logo-title { font-size: 18px; font-weight: 700; }
-    .logout-btn { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 12px; }
 
-    .container { max-width: 600px; margin: 20px auto; padding: 0 16px; }
-
-    .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
-    .card-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-
-    .form-group { margin-bottom: 12px; }
-    .form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; display: block; }
-    .form-input, .form-select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; }
-    
-    .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
-
-    /* Login Modal Overlay */
-    .login-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: #0f172a; z-index: 999; display: flex; justify-content: center; align-items: center; padding: 20px;
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .login-card { background: white; padding: 28px; border-radius: 20px; width: 100%; max-width: 400px; }
 
-    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
-    .delete-btn { background: #fee2e2; color: #ef4444; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+    .logo-box h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-box p {
+      font-size: 11px;
+      color: #e9d5ff;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .auth-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .search-wrapper {
+      padding: 14px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background: #f8fafc;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .search-bar input {
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      margin-left: 10px;
+      font-size: 14px;
+    }
+
+    .categories {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 12px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      scrollbar-width: none;
+    }
+
+    .categories::-webkit-scrollbar {
+      display: none;
+    }
+
+    .chip {
+      white-space: nowrap;
+      padding: 8px 16px;
+      background: #f1f5f9;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .chip.active,
+    .chip:hover {
+      background: var(--primary);
+      color: white;
+    }
+
+    .container {
+      padding: 16px 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .section-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .stores-grid {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+
+    .stores-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .store-card {
+      min-width: 210px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .store-name {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .store-info {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .badge-tag {
+      background: #f3e8ff;
+      color: var(--primary);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+
+    .product-title {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .product-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .product-price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .product-price {
+      font-size: 16px;
+      font-weight: 800;
+      color: #059669;
+    }
+
+    .add-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .cart-bar {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      max-width: 560px;
+      margin: 0 auto;
+      background: #0f172a;
+      color: white;
+      padding: 12px 18px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-md);
+      z-index: 99;
+    }
+
+    .cart-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .cart-count-badge {
+      background: var(--accent);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .checkout-btn {
+      background: var(--success);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Login Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      padding: 20px;
+    }
+
+    .modal-card {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      padding-right: 25px;
+    }
+
+    .modal-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
+    }
+
+    .form-btn {
+      width: 100%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .form-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 12px;
+      margin-top: 12px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .otp-input {
+      text-align: center;
+      letter-spacing: 5px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .message {
+      margin-top: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.5;
+    }
   </style>
 </head>
+
 <body>
 
-  <!-- Admin Email OTP Login Screen -->
-  <div class="login-overlay" id="adminLoginOverlay">
-    <div class="login-card">
-      <div style="text-align: center; margin-bottom: 20px;">
-        <i data-lucide="store" size="40" color="#9333ea"></i>
-        <h2 style="font-size: 20px; margin-top: 10px;">दुकानदार लॉगिन (Admin)</h2>
-        <p style="font-size: 12px; color: var(--text-muted);">Email OTP दर्ज करके अपना स्टोर संभालें</p>
+  <header>
+    <div class="header-top">
+      <div class="logo-box">
+        <h1>LokBazaar</h1>
+        <p>Fashion, Lifestyle & Home Collections</p>
       </div>
 
-      <!-- Step 1: Send OTP -->
-      <div id="otpStep1">
-        <div class="form-group">
-          <label class="form-label">Email ID दर्ज करें</label>
-          <input type="email" id="adminEmail" class="form-input" placeholder="e.g. admin@lokbazaar.com">
-        </div>
-        <button class="btn" onclick="sendAdminOTP()">OTP प्राप्त करें</button>
+      <div class="header-actions">
+        <button
+          class="auth-btn"
+          id="loginHeaderBtn"
+          onclick="openLoginModal()"
+        >
+          <i data-lucide="mail" size="14"></i>
+          <span id="userStatusText">Login</span>
+        </button>
       </div>
+    </div>
+  </header>
 
-      <!-- Step 2: Verify OTP -->
-      <div id="otpStep2" style="display: none;">
-        <div class="form-group">
-          <label class="form-label">6-Digit OTP भरें</label>
-          <input type="text" id="adminOtp" class="form-input" placeholder="xxxxxx" maxlength="6">
-        </div>
-        <button class="btn" style="background:#10b981;" onclick="verifyAdminOTP()">लॉग इन करें</button>
-      </div>
+  <div class="search-wrapper">
+    <div class="search-bar">
+      <i data-lucide="search" size="18" color="#64748b"></i>
 
-      <div id="loginMsg" style="margin-top:12px; font-size:12px; font-weight:600; text-align:center;"></div>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search Saree, Jeans, Shoes, Decor..."
+        onkeyup="filterItems()"
+      >
     </div>
   </div>
 
-  <!-- Main Admin Dashboard -->
-  <header>
-    <div class="logo-title">🏬 LokBazaar Merchant Admin</div>
-    <button class="logout-btn" onclick="logoutAdmin()">
-      <i data-lucide="log-out" size="14"></i>
-      <span>लॉग आउट</span>
-    </button>
-  </header>
+  <div class="categories">
+    <div class="chip active" onclick="filterCategory('All')">
+      All Items / सब
+    </div>
+
+    <div class="chip" onclick="filterCategory('Women Fashion')">
+      👗 Women Wear
+    </div>
+
+    <div class="chip" onclick="filterCategory('Men Fashion')">
+      👔 Men Wear
+    </div>
+
+    <div class="chip" onclick="filterCategory('Footwear')">
+      👟 Footwear
+    </div>
+
+    <div class="chip" onclick="filterCategory('Furniture')">
+      🛋️ Furniture
+    </div>
+
+    <div class="chip" onclick="filterCategory('Home Decor')">
+      ✨ Home Decor
+    </div>
+  </div>
 
   <div class="container">
-    
-    <!-- Store Details -->
-    <div class="card">
-      <div class="card-title"><i data-lucide="map-pin" color="#9333ea"></i> आपकी दुकान की जानकारी</div>
-      <div id="storeInfo">
-        <p style="font-size:13px; color:var(--text-muted);">दुकान लोड हो रही है...</p>
+
+    <div class="section-header">
+      <div class="section-title">
+        🏪 Fashion & Lifestyle Outlets
+      </div>
+
+      <div class="section-sub">
+        Verified Merchants Nearby
       </div>
     </div>
 
-    <!-- Add New Product Form -->
-    <div class="card">
-      <div class="card-title"><i data-lucide="plus-circle" color="#9333ea"></i> नया सामान/कैटलॉग जोड़ें</div>
-      
-      <div class="form-group">
-        <label class="form-label">प्रोडक्ट का नाम</label>
-        <input type="text" id="prodName" class="form-input" placeholder="e.g. Designer Saree, Mens Jeans">
+    <div class="stores-grid" id="storesList">
+      <div class="store-card">
+        <p style="font-size:13px;color:#64748b;">
+          Loading outlets...
+        </p>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:24px;">
+      <div class="section-title">
+        🛍️ Trending Catalog
       </div>
 
-      <div class="form-group">
-        <label class="form-label">कैटेगरी (Category)</label>
-        <select id="prodCategory" class="form-select">
-          <option value="Women Fashion">👗 Women Fashion</option>
-          <option value="Men Fashion">👔 Men Fashion</option>
-          <option value="Footwear">👟 Footwear</option>
-          <option value="Furniture">🛋️ Furniture</option>
-          <option value="Home Decor">✨ Home Decor</option>
-        </select>
+      <div class="section-sub">
+        Direct Inventory
+      </div>
+    </div>
+
+    <div class="products-grid" id="productsList">
+      <p style="font-size:13px;color:#64748b;">
+        Loading products...
+      </p>
+    </div>
+
+  </div>
+
+  <!-- CART -->
+
+  <div class="cart-bar" id="cartBar">
+
+    <div class="cart-info">
+
+      <span class="cart-count-badge" id="cartCount">
+        0 Items
+      </span>
+
+      <div>
+        <div style="font-size:11px;color:#94a3b8;">
+          Total Price
+        </div>
+
+        <div style="font-size:15px;font-weight:700;">
+          ₹<span id="cartTotal">0</span>
+        </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">कीमत (₹)</label>
-        <input type="number" id="prodPrice" class="form-input" placeholder="e.g. 1499">
-      </div>
+    </div>
 
-      <div class="form-group">
-        <label class="form-label">विवरण (Description)</label>
-        <input type="text" id="prodDesc" class="form-input" placeholder="e.g. Pure silk with heavy border">
-      </div>
+    <button
+      class="checkout-btn"
+      onclick="handleCheckout()"
+    >
+      <span>Buy Now</span>
+      <i data-lucide="arrow-right" size="16"></i>
+    </button>
 
-      <button class="btn" onclick="addProduct()">
-        <i data-lucide="save" size="16"></i>
-        <span>प्रोडक्ट सेव करें</span>
+  </div>
+
+  <!-- EMAIL OTP LOGIN MODAL -->
+
+  <div class="modal-overlay" id="loginModal">
+
+    <div class="modal-card">
+
+      <button
+        class="modal-close"
+        onclick="closeLoginModal()"
+      >
+        <i data-lucide="x" size="20"></i>
       </button>
-    </div>
 
-    <!-- Active Inventory List -->
-    <div class="card">
-      <div class="card-title"><i data-lucide="package" color="#9333ea"></i> आपकी दुकान का सामान (Live Items)</div>
-      <div id="productsList">
-        <p style="font-size:13px; color:var(--text-muted);">सामान लोड हो रहा है...</p>
+      <!-- STEP 1 -->
+
+      <div id="otpStep1">
+
+        <div class="modal-title">
+          📩 Email ID से लॉग इन करें
+        </div>
+
+        <div class="modal-sub">
+          आपकी ईमेल पर 8-अंकों का सुरक्षा OTP भेजा जाएगा।
+        </div>
+
+        <input
+          type="email"
+          id="userEmail"
+          class="form-input"
+          placeholder="अपनी Email ID दर्ज करें"
+          autocomplete="email"
+          required
+        >
+
+        <button
+          class="form-btn"
+          id="sendOtpBtn"
+          onclick="sendEmailOTP()"
+        >
+          OTP भेजें
+        </button>
+
       </div>
-    </div>
 
+      <!-- STEP 2 -->
+
+      <div
+        id="otpStep2"
+        style="display:none;"
+      >
+
+        <div class="modal-title">
+          🔑 OTP दर्ज करें
+        </div>
+
+        <div
+          class="modal-sub"
+          id="otpSentSub"
+        >
+          आपकी ईमेल आईडी पर OTP भेज दिया गया है।
+        </div>
+
+        <input
+          type="text"
+          id="otpCode"
+          class="form-input otp-input"
+          placeholder="8-अंकों का OTP"
+          maxlength="8"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          required
+        >
+
+        <button
+          class="form-btn"
+          id="verifyOtpBtn"
+          style="background:#10b981;"
+          onclick="verifyEmailOTP()"
+        >
+          लॉग इन कन्फर्म करें
+        </button>
+
+        <button
+          class="back-btn"
+          onclick="backToEmailStep()"
+        >
+          ← Email बदलें
+        </button>
+
+      </div>
+
+      <div
+        id="modalMsg"
+        class="message"
+      ></div>
+
+    </div>
   </div>
 
   <script>
+
+    /* =========================
+       LUCIDE ICONS
+    ========================= */
+
     lucide.createIcons();
 
-    const SUPABASE_URL = 'https://oehwcamwefkngwbcxnlq.supabase.co';
-    const SUPABASE_ANON_KEY = 'Sb_publishable_4nRNt9HwR8oVK_cGOOSD_g_BgpgyIBj';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let currentAdmin = null;
-    let currentStoreId = '22222222-2222-2222-2222-222222222222';
+    /* =========================
+       SUPABASE CONFIG
+    ========================= */
 
-    async function checkAdminSession() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session && session.user) {
-        currentAdmin = session.user;
-        document.getElementById('adminLoginOverlay').style.display = 'none';
-        loadStoreData();
-        loadProducts();
-      } else {
-        document.getElementById('adminLoginOverlay').style.display = 'flex';
-      }
+    const SUPABASE_URL =
+      'https://oehwcamwefkngwbcxnlq.supabase.co';
+
+    const SUPABASE_ANON_KEY =
+      'Sb_publishable_4nRNt9HwR8oVK_cGOOSD_g_BgpgyIBj';
+
+
+    const supabaseClient =
+      supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+      );
+
+
+    /* =========================
+       APP STATE
+    ========================= */
+
+    let cart = [];
+
+    let allProducts = [];
+
+    let currentUser = null;
+
+
+    /* =========================
+       MESSAGE HELPER
+    ========================= */
+
+    function showMessage(text, color = '#9333ea') {
+
+      const msg =
+        document.getElementById('modalMsg');
+
+      msg.style.color = color;
+
+      msg.innerText = text;
     }
 
-    async function sendAdminOTP() {
-      const email = document.getElementById('adminEmail').value.trim();
-      const msg = document.getElementById('loginMsg');
-      
-      if(!email || !email.includes('@')) {
-        msg.style.color = 'red';
-        msg.innerText = 'सही ईमेल आईडी दर्ज करें!';
+
+    /* =========================
+       SESSION CHECK
+    ========================= */
+
+    async function checkUserSession() {
+
+      const {
+        data: { session },
+        error
+      } =
+        await supabaseClient.auth.getSession();
+
+      if (error) {
+        console.error(
+          'Session error:',
+          error
+        );
         return;
       }
 
-      msg.style.color = '#9333ea';
-      msg.innerText = 'OTP भेजा जा रहा है...';
+      if (
+        session &&
+        session.user
+      ) {
 
-      const { error } = await supabaseClient.auth.signInWithOtp({ email });
+        currentUser = session.user;
 
-      if(error) {
-        msg.style.color = 'red';
-        msg.innerText = error.message;
+        updateLoginUI();
+
       } else {
-        document.getElementById('otpStep1').style.display = 'none';
-        document.getElementById('otpStep2').style.display = 'block';
-        msg.innerText = '';
+
+        currentUser = null;
+
+        updateLoginUI();
+
       }
     }
 
-    async function verifyAdminOTP() {
-      const email = document.getElementById('adminEmail').value.trim();
-      const token = document.getElementById('adminOtp').value.trim();
-      const msg = document.getElementById('loginMsg');
 
-      const { data, error } = await supabaseClient.auth.verifyOtp({ email, token, type: 'email' });
+    /* =========================
+       UPDATE LOGIN UI
+    ========================= */
 
-      if(error) {
-        msg.style.color = 'red';
-        msg.innerText = 'गलत OTP: ' + error.message;
+    function updateLoginUI() {
+
+      const statusText =
+        document.getElementById(
+          'userStatusText'
+        );
+
+      if (currentUser) {
+
+        const email =
+          currentUser.email || '';
+
+        const username =
+          email.split('@')[0];
+
+        statusText.innerText =
+          username || 'Logged In';
+
       } else {
-        msg.style.color = 'green';
-        msg.innerText = 'लॉग इन सफल!';
-        setTimeout(() => checkAdminSession(), 500);
+
+        statusText.innerText =
+          'Login';
+
       }
     }
 
-    async function logoutAdmin() {
-      await supabaseClient.auth.signOut();
-      location.reload();
-    }
 
-    async function loadStoreData() {
-      const { data } = await supabaseClient.from('stores').select('*').limit(1);
-      if(data && data.length > 0) {
-        currentStoreId = data[0].store_id;
-        document.getElementById('storeInfo').innerHTML = `
-          <div style="font-size:16px; font-weight:700;">${data[0].store_name}</div>
-          <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">📍 ${data[0].address}</div>
-          <div style="font-size:12px; color:#10b981; margin-top:2px;">🚚 ${data[0].service_radius_km} KM डिलीवरी दायरा</div>
-        `;
+    /* =========================
+       AUTH STATE LISTENER
+    ========================= */
+
+    supabaseClient.auth.onAuthStateChange(
+      (event, session) => {
+
+        if (
+          session &&
+          session.user
+        ) {
+
+          currentUser =
+            session.user;
+
+        } else {
+
+          currentUser = null;
+
+        }
+
+        updateLoginUI();
+
       }
-    }
+    );
 
-    async function loadProducts() {
-      const { data } = await supabaseClient.from('products').select('*').eq('store_id', currentStoreId);
-      const container = document.getElementById('productsList');
-      
-      if(!data || data.length === 0) {
-        container.innerHTML = '<p style="font-size:12px; color:var(--text-muted);">अभी आपकी दुकान में कोई सामान नहीं है। ऊपर से जोड़ें!</p>';
+
+    /* =========================
+       OPEN LOGIN
+    ========================= */
+
+    function openLoginModal() {
+
+      if (currentUser) {
+
+        const email =
+          currentUser.email || '';
+
+        const logout =
+          confirm(
+            `आप ${email} से लॉग इन हैं। क्या लॉग आउट करना चाहते हैं?`
+          );
+
+        if (logout) {
+
+          supabaseClient.auth.signOut();
+
+        }
+
         return;
       }
 
-      container.innerHTML = data.map(p => `
-        <div class="item-row">
-          <div>
-            <div style="font-size:14px; font-weight:700;">${p.name}</div>
-            <div style="font-size:11px; color:var(--text-muted);">${p.category} • ₹${p.price}</div>
-          </div>
-          <button class="delete-btn" onclick="deleteProduct('${p.id}')">
-            <i data-lucide="trash-2" size="14"></i>
-          </button>
-        </div>
-      `).join('');
-      lucide.createIcons();
+      document.getElementById(
+        'loginModal'
+      ).style.display = 'flex';
+
+      document.getElementById(
+        'otpStep1'
+      ).style.display = 'block';
+
+      document.getElementById(
+        'otpStep2'
+      ).style.display = 'none';
+
+      document.getElementById(
+        'modalMsg'
+      ).innerText = '';
+
     }
 
-    async function addProduct() {
-      const name = document.getElementById('prodName').value.trim();
-      const category = document.getElementById('prodCategory').value;
-      const price = parseFloat(document.getElementById('prodPrice').value);
-      const description = document.getElementById('prodDesc').value.trim();
 
-      if(!name || !price) {
-        alert('कृपया नाम और कीमत दोनों भरें!');
+    /* =========================
+       CLOSE LOGIN
+    ========================= */
+
+    function closeLoginModal() {
+
+      document.getElementById(
+        'loginModal'
+      ).style.display = 'none';
+
+      document.getElementById(
+        'modalMsg'
+      ).innerText = '';
+
+    }
+
+
+    /* =========================
+       BACK TO EMAIL
+    ========================= */
+
+    function backToEmailStep() {
+
+      document.getElementById(
+        'otpStep1'
+      ).style.display = 'block';
+
+      document.getElementById(
+        'otpStep2'
+      ).style.display = 'none';
+
+      document.getElementById(
+        'otpCode'
+      ).value = '';
+
+      showMessage('');
+
+    }
+
+
+    /* =========================
+       SEND EMAIL OTP
+    ========================= */
+
+    async function sendEmailOTP() {
+
+      const email =
+        document
+          .getElementById('userEmail')
+          .value
+          .trim()
+          .toLowerCase();
+
+      const button =
+        document.getElementById(
+          'sendOtpBtn'
+        );
+
+
+      if (
+        !email ||
+        !email.includes('@')
+      ) {
+
+        showMessage(
+          'कृपया सही Email ID डालें!',
+          'red'
+        );
+
         return;
       }
 
-      const { error } = await supabaseClient.from('products').insert([
-        { store_id: currentStoreId, name, category, price, description }
-      ]);
 
-      if(error) {
-        alert('गलती: ' + error.message);
-      } else {
-        alert('🎉 नया आइटम दुकान में जुड़ गया है!');
-        document.getElementById('prodName').value = '';
-        document.getElementById('prodPrice').value = '';
-        document.getElementById('prodDesc').value = '';
-        loadProducts();
+      button.disabled = true;
+
+      showMessage(
+        'OTP भेजा जा रहा है...',
+        '#9333ea'
+      );
+
+
+      try {
+
+        const {
+          error
+        } =
+          await supabaseClient.auth.signInWithOtp({
+            email: email,
+            options: {
+              shouldCreateUser: true
+            }
+          });
+
+
+        if (error) {
+
+          showMessage(
+            'त्रुटि: ' + error.message,
+            'red'
+          );
+
+          button.disabled = false;
+
+          return;
+        }
+
+
+        document.getElementById(
+          'otpStep1'
+        ).style.display = 'none';
+
+        document.getElementById(
+          'otpStep2'
+        ).style.display = 'block';
+
+
+        document.getElementById(
+          'otpSentSub'
+        ).innerText =
+          `${email} पर 8-अंकों का OTP भेज दिया गया है।`;
+
+
+        showMessage(
+          'OTP भेज दिया गया है। अपना Email Inbox चेक करें।',
+          '#10b981'
+        );
+
+
+      } catch (err) {
+
+        console.error(err);
+
+        showMessage(
+          'OTP भेजने में समस्या हुई।',
+          'red'
+        );
+
       }
+
+
+      button.disabled = false;
+
     }
 
-    async function deleteProduct(id) {
-      if(confirm('क्या आप इस आइटम को हटाना चाहते हैं?')) {
-        await supabaseClient.from('products').delete().eq('id', id);
-        loadProducts();
-      }
-    }
 
-    checkAdminSession();
-  </script>
-</body>
-</html>
+    /* =========================
+       VERIFY EMAIL OTP
+    ========================= */
+
+    async function verifyEmailOTP() {
+
+      const email =
+        document
+          .getElementById('userEmail')
+          .value
+          .trim()
+          .toLowerCase();
+
+      const token =
+        document
+          .getElementById('otpCode')
+          .value
+          .trim();
+
+      const button =
+        document.getElementById(
+          'verifyOtpBtn'
+        );
+
+
+      if (
+        !token ||
+        token.length !== 8 ||
+        !/^\d{8}$/.test(token)
+      ) {
+
+        showMessage(
+          'कृपया पूरा 8-अंकों का OTP दर्ज करें!',
+          'red'
+        );
+
+        return;
+      }
+
+
+      button.disabled = true;
+
+      showMessage(
+        'OTP सत्यापित किया जा रहा है...',
+        '#9333ea'
+      );
+
+
+      try {
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient.auth.verifyOtp({
+
+            email: email,
+
+            token: token,
+
+            type: 'email'
+
+          });
+
+
+        if (error) {
+
+          console.error(
+            'OTP verification error:',
+            error
+  
