@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LokBazaar - Merchant Portal</title>
+  <title>LokBazaar - Merchant Admin Portal</title>
   
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -21,205 +21,275 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: var(--bg); color: var(--text-main); padding: 20px; }
-    
-    .container { max-width: 600px; margin: 0 auto; }
-    
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    }
+    body { background: var(--bg); color: var(--text-main); padding-bottom: 50px; }
 
-    h2 { font-size: 18px; margin-bottom: 16px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
-
-    .form-group { margin-bottom: 14px; }
-    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
-    
-    input, select, textarea {
-      width: 100%;
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      font-size: 14px;
-      outline: none;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
-    }
-
-    .btn {
-      width: 100%;
-      background: var(--primary);
+    header {
+      background: #0f172a;
       color: white;
-      border: none;
-      padding: 12px;
-      border-radius: var(--radius);
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
+      padding: 16px 20px;
+      display: flex; justify-content: space-between; align-items: center;
     }
+    .logo-title { font-size: 18px; font-weight: 700; }
+    .logout-btn { background: #ef4444; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 12px; }
 
-    .status-msg {
-      margin-top: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: center;
+    .container { max-width: 600px; margin: 20px auto; padding: 0 16px; }
+
+    .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .card-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+    .form-group { margin-bottom: 12px; }
+    .form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; display: block; }
+    .form-input, .form-select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; }
+    
+    .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px; }
+
+    /* Login Modal Overlay */
+    .login-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: #0f172a; z-index: 999; display: flex; justify-content: center; align-items: center; padding: 20px;
     }
+    .login-card { background: white; padding: 28px; border-radius: 20px; width: 100%; max-width: 400px; }
+
+    .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .delete-btn { background: #fee2e2; color: #ef4444; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
   </style>
 </head>
 <body>
 
-<div class="container">
+  <!-- Admin Email OTP Login Screen -->
+  <div class="login-overlay" id="adminLoginOverlay">
+    <div class="login-card">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i data-lucide="store" size="40" color="#9333ea"></i>
+        <h2 style="font-size: 20px; margin-top: 10px;">दुकानदार लॉगिन (Admin)</h2>
+        <p style="font-size: 12px; color: var(--text-muted);">Email OTP दर्ज करके अपना स्टोर संभालें</p>
+      </div>
 
-  <div class="card">
-    <h2><i data-lucide="store"></i> 1. दुकान रजिस्टर करें (Store Registration)</h2>
-    <form id="storeForm">
-      <div class="form-group">
-        <label>दुकान/शोरूम का नाम (Store Name)</label>
-        <input type="text" id="storeName" placeholder="उदा. रॉयल फ़र्नीचर & फ़ैशन" required>
+      <!-- Step 1: Send OTP -->
+      <div id="otpStep1">
+        <div class="form-group">
+          <label class="form-label">Email ID दर्ज करें</label>
+          <input type="email" id="adminEmail" class="form-input" placeholder="e.g. admin@lokbazaar.com">
+        </div>
+        <button class="btn" onclick="sendAdminOTP()">OTP प्राप्त करें</button>
       </div>
-      <div class="form-group">
-        <label>पूरा पता (Address & Landmark)</label>
-        <input type="text" id="storeAddress" placeholder="उदा. मेन मार्केट, जयपुर" required>
+
+      <!-- Step 2: Verify OTP -->
+      <div id="otpStep2" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">6-Digit OTP भरें</label>
+          <input type="text" id="adminOtp" class="form-input" placeholder="xxxxxx" maxlength="6">
+        </div>
+        <button class="btn" style="background:#10b981;" onclick="verifyAdminOTP()">लॉग इन करें</button>
       </div>
-      <div class="form-group">
-        <label>डिलीवरी की सीमा (Service Radius in KM)</label>
-        <input type="number" id="storeRadius" value="10" required>
-      </div>
-      <button type="submit" class="btn">
-        <span>दुकान सेव करें</span>
-        <i data-lucide="arrow-right" size="16"></i>
-      </button>
-    </form>
-    <div id="storeMsg" class="status-msg"></div>
+
+      <div id="loginMsg" style="margin-top:12px; font-size:12px; font-weight:600; text-align:center;"></div>
+    </div>
   </div>
 
-  <div class="card">
-    <h2><i data-lucide="package-plus"></i> 2. सामान / आइटम जोड़ें (Add Product)</h2>
-    <form id="productForm">
+  <!-- Main Admin Dashboard -->
+  <header>
+    <div class="logo-title">🏬 LokBazaar Merchant Admin</div>
+    <button class="logout-btn" onclick="logoutAdmin()">
+      <i data-lucide="log-out" size="14"></i>
+      <span>लॉग आउट</span>
+    </button>
+  </header>
+
+  <div class="container">
+    
+    <!-- Store Details -->
+    <div class="card">
+      <div class="card-title"><i data-lucide="map-pin" color="#9333ea"></i> आपकी दुकान की जानकारी</div>
+      <div id="storeInfo">
+        <p style="font-size:13px; color:var(--text-muted);">दुकान लोड हो रही है...</p>
+      </div>
+    </div>
+
+    <!-- Add New Product Form -->
+    <div class="card">
+      <div class="card-title"><i data-lucide="plus-circle" color="#9333ea"></i> नया सामान/कैटलॉग जोड़ें</div>
+      
       <div class="form-group">
-        <label>दुकान चुनें (Select Store)</label>
-        <select id="storeSelect" required>
-          <option value="">पहले दुकान चुनें...</option>
+        <label class="form-label">प्रोडक्ट का नाम</label>
+        <input type="text" id="prodName" class="form-input" placeholder="e.g. Designer Saree, Mens Jeans">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">कैटेगरी (Category)</label>
+        <select id="prodCategory" class="form-select">
+          <option value="Women Fashion">👗 Women Fashion</option>
+          <option value="Men Fashion">👔 Men Fashion</option>
+          <option value="Footwear">👟 Footwear</option>
+          <option value="Furniture">🛋️ Furniture</option>
+          <option value="Home Decor">✨ Home Decor</option>
         </select>
       </div>
+
       <div class="form-group">
-        <label>सामान का नाम (Product Name)</label>
-        <input type="text" id="prodName" placeholder="उदा. Silk Saree / King Size Bed / Leather Shoes" required>
+        <label class="form-label">कीमत (₹)</label>
+        <input type="number" id="prodPrice" class="form-input" placeholder="e.g. 1499">
       </div>
+
       <div class="form-group">
-        <label>कैटेगरी (Category)</label>
-        <select id="prodCategory" required>
-          <option value="Women Fashion">👗 Women Wear (साड़ी, कुर्ती)</option>
-          <option value="Men Fashion">👔 Men Wear (शर्ट, जीन्स)</option>
-          <option value="Footwear">👟 Footwear (जूते, चप्पल)</option>
-          <option value="Furniture">🛋️ Furniture (पलंग, सोफा)</option>
-          <option value="Home Decor">✨ Fancy Lighting & Decor</option>
-          <option value="Electronics">🎧 Electronics & Gadgets</option>
-        </select>
+        <label class="form-label">विवरण (Description)</label>
+        <input type="text" id="prodDesc" class="form-input" placeholder="e.g. Pure silk with heavy border">
       </div>
-      <div class="form-group">
-        <label>कीमत (Price in ₹)</label>
-        <input type="number" id="prodPrice" placeholder="उदा. 1499" required>
-      </div>
-      <div class="form-group">
-        <label>विवरण (Description / Details)</label>
-        <textarea id="prodDesc" rows="2" placeholder="सामान की खासियत, साइज़ या मटीरियल लिखें..."></textarea>
-      </div>
-      <button type="submit" class="btn" style="background:#10b981;">
-        <span>आइटम लिस्ट करें</span>
-        <i data-lucide="plus-circle" size="16"></i>
+
+      <button class="btn" onclick="addProduct()">
+        <i data-lucide="save" size="16"></i>
+        <span>प्रोडक्ट सेव करें</span>
       </button>
-    </form>
-    <div id="prodMsg" class="status-msg"></div>
+    </div>
+
+    <!-- Active Inventory List -->
+    <div class="card">
+      <div class="card-title"><i data-lucide="package" color="#9333ea"></i> आपकी दुकान का सामान (Live Items)</div>
+      <div id="productsList">
+        <p style="font-size:13px; color:var(--text-muted);">सामान लोड हो रहा है...</p>
+      </div>
+    </div>
+
   </div>
 
-</div>
+  <script>
+    lucide.createIcons();
 
-<script>
-  lucide.createIcons();
+    const SUPABASE_URL = 'https://oehwcamwefkngwbcxnlq.supabase.co';
+    const SUPABASE_ANON_KEY = 'Sb_publishable_4nRNt9HwR8oVK_cGOOSD_g_BgpgyIBj';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const SUPABASE_URL = 'https://oehwcamwefkngwbcxnlq.supabase.co';
-  const SUPABASE_ANON_KEY = 'Sb_publishable_4nRNt9HwR8oVK_cGOOSD_g_BgpgyIBj';
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let currentAdmin = null;
+    let currentStoreId = '22222222-2222-2222-2222-222222222222';
 
-  async function loadStores() {
-    const { data, error } = await supabase.from('stores').select('store_id, store_name');
-    const select = document.getElementById('storeSelect');
-    if (data && data.length > 0) {
-      select.innerHTML = '<option value="">दुकान चुनें...</option>' + 
-        data.map(s => `<option value="${s.store_id}">${s.store_name}</option>`).join('');
-    }
-  }
-
-  document.getElementById('storeForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const msg = document.getElementById('storeMsg');
-    msg.innerText = 'सेव हो रहा है...';
-
-    const { data: merchants } = await supabase.from('merchants').select('merchant_id').limit(1);
-    const merchantId = merchants && merchants.length > 0 ? merchants[0].merchant_id : null;
-
-    if (!merchantId) {
-      msg.style.color = 'red';
-      msg.innerText = 'त्रुटि: पहले Database में merchant मौजूद होना चाहिए!';
-      return;
+    async function checkAdminSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session && session.user) {
+        currentAdmin = session.user;
+        document.getElementById('adminLoginOverlay').style.display = 'none';
+        loadStoreData();
+        loadProducts();
+      } else {
+        document.getElementById('adminLoginOverlay').style.display = 'flex';
+      }
     }
 
-    const { error } = await supabase.from('stores').insert([{
-      merchant_id: merchantId,
-      store_name: document.getElementById('storeName').value,
-      address: document.getElementById('storeAddress').value,
-      service_radius_km: parseFloat(document.getElementById('storeRadius').value)
-    }]);
+    async function sendAdminOTP() {
+      const email = document.getElementById('adminEmail').value.trim();
+      const msg = document.getElementById('loginMsg');
+      
+      if(!email || !email.includes('@')) {
+        msg.style.color = 'red';
+        msg.innerText = 'सही ईमेल आईडी दर्ज करें!';
+        return;
+      }
 
-    if (error) {
-      msg.style.color = 'red';
-      msg.innerText = 'गलती: ' + error.message;
-    } else {
-      msg.style.color = 'green';
-      msg.innerText = '✅ दुकान सफलता से जुड़ गई!';
-      document.getElementById('storeForm').reset();
-      loadStores();
+      msg.style.color = '#9333ea';
+      msg.innerText = 'OTP भेजा जा रहा है...';
+
+      const { error } = await supabaseClient.auth.signInWithOtp({ email });
+
+      if(error) {
+        msg.style.color = 'red';
+        msg.innerText = error.message;
+      } else {
+        document.getElementById('otpStep1').style.display = 'none';
+        document.getElementById('otpStep2').style.display = 'block';
+        msg.innerText = '';
+      }
     }
-  });
 
-  document.getElementById('productForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const msg = document.getElementById('prodMsg');
-    msg.innerText = 'आइटम जोड़ा जा रहा है...';
+    async function verifyAdminOTP() {
+      const email = document.getElementById('adminEmail').value.trim();
+      const token = document.getElementById('adminOtp').value.trim();
+      const msg = document.getElementById('loginMsg');
 
-    const { error } = await supabase.from('products').insert([{
-      store_id: document.getElementById('storeSelect').value,
-      name: document.getElementById('prodName').value,
-      category: document.getElementById('prodCategory').value,
-      price: parseFloat(document.getElementById('prodPrice').value),
-      description: document.getElementById('prodDesc').value
-    }]);
+      const { data, error } = await supabaseClient.auth.verifyOtp({ email, token, type: 'email' });
 
-    if (error) {
-      msg.style.color = 'red';
-      msg.innerText = 'गलती: ' + error.message;
-    } else {
-      msg.style.color = 'green';
-      msg.innerText = '🎉 सामान सफलतापूर्वक ऐप में लाइव हो गया!';
-      document.getElementById('productForm').reset();
+      if(error) {
+        msg.style.color = 'red';
+        msg.innerText = 'गलत OTP: ' + error.message;
+      } else {
+        msg.style.color = 'green';
+        msg.innerText = 'लॉग इन सफल!';
+        setTimeout(() => checkAdminSession(), 500);
+      }
     }
-  });
 
-  loadStores();
-</script>
+    async function logoutAdmin() {
+      await supabaseClient.auth.signOut();
+      location.reload();
+    }
 
+    async function loadStoreData() {
+      const { data } = await supabaseClient.from('stores').select('*').limit(1);
+      if(data && data.length > 0) {
+        currentStoreId = data[0].store_id;
+        document.getElementById('storeInfo').innerHTML = `
+          <div style="font-size:16px; font-weight:700;">${data[0].store_name}</div>
+          <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">📍 ${data[0].address}</div>
+          <div style="font-size:12px; color:#10b981; margin-top:2px;">🚚 ${data[0].service_radius_km} KM डिलीवरी दायरा</div>
+        `;
+      }
+    }
+
+    async function loadProducts() {
+      const { data } = await supabaseClient.from('products').select('*').eq('store_id', currentStoreId);
+      const container = document.getElementById('productsList');
+      
+      if(!data || data.length === 0) {
+        container.innerHTML = '<p style="font-size:12px; color:var(--text-muted);">अभी आपकी दुकान में कोई सामान नहीं है। ऊपर से जोड़ें!</p>';
+        return;
+      }
+
+      container.innerHTML = data.map(p => `
+        <div class="item-row">
+          <div>
+            <div style="font-size:14px; font-weight:700;">${p.name}</div>
+            <div style="font-size:11px; color:var(--text-muted);">${p.category} • ₹${p.price}</div>
+          </div>
+          <button class="delete-btn" onclick="deleteProduct('${p.id}')">
+            <i data-lucide="trash-2" size="14"></i>
+          </button>
+        </div>
+      `).join('');
+      lucide.createIcons();
+    }
+
+    async function addProduct() {
+      const name = document.getElementById('prodName').value.trim();
+      const category = document.getElementById('prodCategory').value;
+      const price = parseFloat(document.getElementById('prodPrice').value);
+      const description = document.getElementById('prodDesc').value.trim();
+
+      if(!name || !price) {
+        alert('कृपया नाम और कीमत दोनों भरें!');
+        return;
+      }
+
+      const { error } = await supabaseClient.from('products').insert([
+        { store_id: currentStoreId, name, category, price, description }
+      ]);
+
+      if(error) {
+        alert('गलती: ' + error.message);
+      } else {
+        alert('🎉 नया आइटम दुकान में जुड़ गया है!');
+        document.getElementById('prodName').value = '';
+        document.getElementById('prodPrice').value = '';
+        document.getElementById('prodDesc').value = '';
+        loadProducts();
+      }
+    }
+
+    async function deleteProduct(id) {
+      if(confirm('क्या आप इस आइटम को हटाना चाहते हैं?')) {
+        await supabaseClient.from('products').delete().eq('id', id);
+        loadProducts();
+      }
+    }
+
+    checkAdminSession();
+  </script>
 </body>
-  </html>
-  
+</html>
