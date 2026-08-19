@@ -5,15 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LokBazaar - Fashion & Lifestyle Shopping</title>
   
-  <!-- Supabase CDN JS Library -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Google Fonts & Lucide Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     :root {
-      --primary: #9333ea; /* Meesho Style Purple */
+      --primary: #9333ea;
       --primary-dark: #7e22ce;
       --accent: #ff4757;
       --success: #10b981;
@@ -42,7 +40,6 @@
       padding-bottom: 90px;
     }
 
-    /* Top E-Commerce Header */
     header {
       background: linear-gradient(135deg, #9333ea, #6366f1);
       color: white;
@@ -81,7 +78,6 @@
       backdrop-filter: blur(8px);
     }
 
-    /* Search Bar */
     .search-wrapper {
       padding: 14px 20px;
       background: var(--surface);
@@ -114,7 +110,6 @@
       color: var(--text-main);
     }
 
-    /* Meesho/Amazon Style Category Chips */
     .categories {
       display: flex;
       gap: 10px;
@@ -146,7 +141,6 @@
       color: white;
     }
 
-    /* Layout Containers */
     .container {
       padding: 16px 20px;
       max-width: 600px;
@@ -168,7 +162,6 @@
       color: var(--text-muted);
     }
 
-    /* Showrooms Grid */
     .stores-grid {
       display: flex;
       gap: 12px;
@@ -201,7 +194,6 @@
       margin-top: 6px;
     }
 
-    /* Meesho-style Product Cards Grid */
     .products-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -276,7 +268,6 @@
       gap: 4px;
     }
 
-    /* Floating Cart Bar */
     .cart-bar {
       position: fixed;
       bottom: 16px;
@@ -327,7 +318,6 @@
 </head>
 <body>
 
-  <!-- Header -->
   <header>
     <div class="header-top">
       <div class="logo-box">
@@ -341,7 +331,6 @@
     </div>
   </header>
 
-  <!-- Search & Category Filters -->
   <div class="search-wrapper">
     <div class="search-bar">
       <i data-lucide="search" size="18" color="#64748b"></i>
@@ -349,7 +338,6 @@
     </div>
   </div>
 
-  <!-- Amazon/Meesho Style Filter Chips -->
   <div class="categories">
     <div class="chip active" onclick="filterCategory('All')">All Items / सब</div>
     <div class="chip" onclick="filterCategory('Women Fashion')">👗 Women Wear (साड़ी, कुर्ती)</div>
@@ -361,7 +349,6 @@
   </div>
 
   <div class="container">
-    <!-- Stores Section -->
     <div class="section-header">
       <div class="section-title">🏪 Fashion & Lifestyle Outlets</div>
       <div class="section-sub">Verified Merchants Nearby</div>
@@ -370,7 +357,6 @@
       <div class="store-card"><p style="font-size:13px; color:#64748b;">Loading outlets...</p></div>
     </div>
 
-    <!-- Products Section -->
     <div class="section-header" style="margin-top: 24px;">
       <div class="section-title">🛍️ Trending Catalog / फ़ैशन और सामान</div>
       <div class="section-sub">Meesho & Amazon Style Direct Inventory</div>
@@ -380,7 +366,6 @@
     </div>
   </div>
 
-  <!-- Bottom Floating Cart -->
   <div class="cart-bar" id="cartBar">
     <div class="cart-info">
       <span class="cart-count-badge" id="cartCount">0 Items</span>
@@ -398,15 +383,14 @@
   <script>
     lucide.createIcons();
 
-    // Supabase Credentials
-    const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    // Live Connected Credentials
+    const SUPABASE_URL = 'https://oehwcamwefkngwbcxnlq.supabase.co';
+    const SUPABASE_ANON_KEY = 'Sb_publishable_4nRNt9HwR8oVK_cGOOSD_g_BgpgyIBj';
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let cart = [];
     let allProducts = [];
 
-    // 1. Fetch Outlets
     async function fetchStores() {
       const { data, error } = await supabase.from('stores').select('*');
       const container = document.getElementById('storesList');
@@ -432,7 +416,6 @@
       lucide.createIcons();
     }
 
-    // 2. Fetch All Fashion & Home Products
     async function fetchProducts() {
       const { data, error } = await supabase.from('products').select('*');
       const container = document.getElementById('productsList');
@@ -467,7 +450,6 @@
       lucide.createIcons();
     }
 
-    // 3. Cart Updates
     function addToCart(name, price) {
       cart.push({ name, price });
       updateCartUI();
@@ -479,7 +461,6 @@
       document.getElementById('cartTotal').innerText = total;
     }
 
-    // 4. Filters
     function filterItems() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       const filtered = allProducts.filter(p => 
@@ -503,4 +484,5 @@
   </script>
 
 </body>
-</html>
+      </html>
+      
