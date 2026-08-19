@@ -3,40 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LokBazaar - Fashion & Lifestyle Shopping</title>
+  <title>LokBazaar Admin Panel</title>
 
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     :root {
       --primary: #9333ea;
       --primary-dark: #7e22ce;
-      --accent: #ff4757;
       --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
       --bg: #f1f5f9;
-      --surface: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
       --border: #e2e8f0;
-      --radius-lg: 16px;
-      --radius-md: 12px;
-      --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-      --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+      --radius: 16px;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: Arial, sans-serif;
     }
 
     body {
       background: var(--bg);
-      color: var(--text-main);
-      padding-bottom: 90px;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
     }
 
     header {
@@ -46,1019 +51,795 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 20px rgba(0,0,0,.15);
     }
 
-    .header-top {
+    .header-inner {
+      max-width: 1000px;
+      margin: auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 15px;
     }
 
-    .logo-box h1 {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
+    .logo-title { font-size: 21px; font-weight: 800; }
+    .logo-sub { font-size: 11px; opacity: .8; margin-top: 3px; }
 
-    .logo-box p {
-      font-size: 11px;
-      color: #e9d5ff;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .auth-btn {
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
+    .logout-btn {
+      background: rgba(255,255,255,.2);
       color: white;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .search-wrapper {
-      padding: 14px 20px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .search-bar {
-      display: flex;
-      align-items: center;
-      background: #f8fafc;
-      padding: 12px 16px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-    }
-
-    .search-bar input {
-      border: none;
-      background: transparent;
-      outline: none;
-      width: 100%;
-      margin-left: 10px;
-      font-size: 14px;
-    }
-
-    .categories {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding: 12px 20px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      scrollbar-width: none;
-    }
-
-    .categories::-webkit-scrollbar {
-      display: none;
-    }
-
-    .chip {
-      white-space: nowrap;
-      padding: 8px 16px;
-      background: #f1f5f9;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-    }
-
-    .chip.active,
-    .chip:hover {
-      background: var(--primary);
-      color: white;
-    }
-
-    .container {
-      padding: 16px 20px;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .section-header {
-      margin-bottom: 12px;
-    }
-
-    .section-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .section-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .stores-grid {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      scrollbar-width: none;
-    }
-
-    .stores-grid::-webkit-scrollbar {
-      display: none;
-    }
-
-    .store-card {
-      min-width: 210px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 14px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .store-name {
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .store-info {
-      font-size: 12px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 6px;
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 14px;
-    }
-
-    .product-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .badge-tag {
-      background: #f3e8ff;
-      color: var(--primary);
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      display: inline-block;
-    }
-
-    .product-title {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.3;
-    }
-
-    .product-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .product-price-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
-
-    .product-price {
-      font-size: 16px;
-      font-weight: 800;
-      color: #059669;
-    }
-
-    .add-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: var(--radius-md);
-      font-weight: 700;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .cart-bar {
-      position: fixed;
-      bottom: 16px;
-      left: 16px;
-      right: 16px;
-      max-width: 560px;
-      margin: 0 auto;
-      background: #0f172a;
-      color: white;
-      padding: 12px 18px;
-      border-radius: var(--radius-lg);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow-md);
-      z-index: 99;
-    }
-
-    .cart-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .cart-count-badge {
-      background: var(--accent);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .checkout-btn {
-      background: var(--success);
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: var(--radius-md);
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
+      padding: 9px 13px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    /* Login Modal */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 200;
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      margin: auto;
       padding: 20px;
     }
 
-    .modal-card {
-      background: white;
-      border-radius: 20px;
-      padding: 24px;
-      width: 100%;
-      max-width: 400px;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
-      position: relative;
+    #loginSection {
+      max-width: 430px;
+      margin: 70px auto;
+      padding: 20px;
     }
 
-    .modal-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-muted);
-    }
-
-    .modal-title {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 4px;
-      padding-right: 25px;
-    }
-
-    .modal-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-
-    .form-input {
-      width: 100%;
-      padding: 12px;
+    .card {
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 14px;
-      margin-bottom: 12px;
-      outline: none;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+      margin-bottom: 20px;
     }
 
-    .form-input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1);
-    }
-
-    .form-btn {
-      width: 100%;
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .form-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .back-btn {
-      background: none;
-      border: none;
+    .login-icon {
+      width: 55px;
+      height: 55px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f3e8ff;
       color: var(--primary);
-      font-size: 12px;
-      margin-top: 12px;
-      cursor: pointer;
-      width: 100%;
+      margin-bottom: 15px;
     }
 
-    .otp-input {
-      text-align: center;
-      letter-spacing: 5px;
-      font-size: 20px;
-      font-weight: 700;
+    .card-title { font-size: 19px; font-weight: 800; margin-bottom: 5px; }
+    .card-sub { font-size: 12px; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+
+    .input {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 11px;
     }
+
+    .input:focus { border-color: var(--primary); }
+
+    .btn {
+      padding: 12px 16px;
+      border-radius: 11px;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-full { width: 100%; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-gray { background: #e2e8f0; color: #0f172a; }
 
     .message {
-      margin-top: 12px;
-      font-size: 12px;
-      font-weight: 600;
       text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      margin-top: 12px;
       line-height: 1.5;
+    }
+
+    #adminApp { display: none; }
+
+    .welcome {
+      background: linear-gradient(135deg, #9333ea, #6366f1);
+      color: white;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 18px;
+    }
+
+    .welcome-title { font-size: 20px; font-weight: 800; }
+    .welcome-sub { font-size: 12px; opacity: .85; margin-top: 5px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 16px;
+    }
+
+    .stat-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #f3e8ff;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .stat-number { font-size: 23px; font-weight: 800; }
+    .stat-label { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .section-title { font-size: 18px; font-weight: 800; }
+    .section-sub { font-size: 11px; color: var(--muted); }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .full { grid-column: 1 / -1; }
+    textarea.input { min-height: 90px; resize: vertical; }
+
+    .form-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .items { margin-top: 20px; }
+
+    .item {
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 14px;
+      margin-bottom: 10px;
+      background: #fff;
+    }
+
+    .item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .item-name { font-size: 15px; font-weight: 800; }
+    .item-price { font-size: 15px; font-weight: 800; color: #059669; }
+    .item-details { font-size: 12px; color: var(--muted); line-height: 1.6; margin-top: 6px; }
+
+    .badge {
+      display: inline-block;
+      background: #f3e8ff;
+      color: var(--primary);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    .item-actions {
+      display: flex;
+      gap: 7px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .small-btn { padding: 8px 11px; border-radius: 8px; font-size: 12px; }
+    .empty { color: var(--muted); text-align: center; padding: 20px; font-size: 13px; }
+    .loading { color: var(--muted); font-size: 13px; padding: 15px 0; }
+    .hidden { display: none !important; }
+
+    @media(max-width:650px) {
+      .container { padding: 14px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .form-grid { grid-template-columns: 1fr; }
+      .full { grid-column: auto; }
+      .header-inner { align-items: flex-start; }
+      .logo-title { font-size: 18px; }
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <div class="header-top">
-      <div class="logo-box">
-        <h1>LokBazaar</h1>
-        <p>Fashion, Lifestyle & Home Collections</p>
-      </div>
-
-      <div class="header-actions">
-        <button
-          class="auth-btn"
-          id="loginHeaderBtn"
-          onclick="openLoginModal()"
-        >
-          <i data-lucide="mail" size="14"></i>
-          <span id="userStatusText">Login</span>
-        </button>
-      </div>
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="logo-title">🛍️ LokBazaar Admin</div>
+      <div class="logo-sub">Products • Stores • Inventory Management</div>
     </div>
-  </header>
-
-  <div class="search-wrapper">
-    <div class="search-bar">
-      <i data-lucide="search" size="18" color="#64748b"></i>
-
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search Saree, Jeans, Shoes, Decor..."
-        onkeyup="filterItems()"
-      >
-    </div>
-  </div>
-
-  <div class="categories">
-    <div class="chip active" onclick="filterCategory('All')">
-      All Items / सब
-    </div>
-
-    <div class="chip" onclick="filterCategory('Women Fashion')">
-      👗 Women Wear
-    </div>
-
-    <div class="chip" onclick="filterCategory('Men Fashion')">
-      👔 Men Wear
-    </div>
-
-    <div class="chip" onclick="filterCategory('Footwear')">
-      👟 Footwear
-    </div>
-
-    <div class="chip" onclick="filterCategory('Furniture')">
-      🛋️ Furniture
-    </div>
-
-    <div class="chip" onclick="filterCategory('Home Decor')">
-      ✨ Home Decor
-    </div>
-  </div>
-
-  <div class="container">
-
-    <div class="section-header">
-      <div class="section-title">
-        🏪 Fashion & Lifestyle Outlets
-      </div>
-
-      <div class="section-sub">
-        Verified Merchants Nearby
-      </div>
-    </div>
-
-    <div class="stores-grid" id="storesList">
-      <div class="store-card">
-        <p style="font-size:13px;color:#64748b;">
-          Loading outlets...
-        </p>
-      </div>
-    </div>
-
-    <div class="section-header" style="margin-top:24px;">
-      <div class="section-title">
-        🛍️ Trending Catalog
-      </div>
-
-      <div class="section-sub">
-        Direct Inventory
-      </div>
-    </div>
-
-    <div class="products-grid" id="productsList">
-      <p style="font-size:13px;color:#64748b;">
-        Loading products...
-      </p>
-    </div>
-
-  </div>
-
-  <!-- CART -->
-
-  <div class="cart-bar" id="cartBar">
-
-    <div class="cart-info">
-
-      <span class="cart-count-badge" id="cartCount">
-        0 Items
-      </span>
-
-      <div>
-        <div style="font-size:11px;color:#94a3b8;">
-          Total Price
-        </div>
-
-        <div style="font-size:15px;font-weight:700;">
-          ₹<span id="cartTotal">0</span>
-        </div>
-      </div>
-
-    </div>
-
-    <button
-      class="checkout-btn"
-      onclick="handleCheckout()"
-    >
-      <span>Buy Now</span>
-      <i data-lucide="arrow-right" size="16"></i>
+    <button class="logout-btn" onclick="logout()">
+      <i data-lucide="log-out" size="15"></i> Logout
     </button>
-
   </div>
+</header>
 
-  <!-- EMAIL OTP LOGIN MODAL -->
-
-  <div class="modal-overlay" id="loginModal">
-
-    <div class="modal-card">
-
-      <button
-        class="modal-close"
-        onclick="closeLoginModal()"
-      >
-        <i data-lucide="x" size="20"></i>
-      </button>
-
-      <!-- STEP 1 -->
-
-      <div id="otpStep1">
-
-        <div class="modal-title">
-          📩 Email ID से लॉग इन करें
-        </div>
-
-        <div class="modal-sub">
-          आपकी ईमेल पर 8-अंकों का सुरक्षा OTP भेजा जाएगा।
-        </div>
-
-        <input
-          type="email"
-          id="userEmail"
-          class="form-input"
-          placeholder="अपनी Email ID दर्ज करें"
-          autocomplete="email"
-          required
-        >
-
-        <button
-          class="form-btn"
-          id="sendOtpBtn"
-          onclick="sendEmailOTP()"
-        >
-          OTP भेजें
-        </button>
-
-      </div>
-
-      <!-- STEP 2 -->
-
-      <div
-        id="otpStep2"
-        style="display:none;"
-      >
-
-        <div class="modal-title">
-          🔑 OTP दर्ज करें
-        </div>
-
-        <div
-          class="modal-sub"
-          id="otpSentSub"
-        >
-          आपकी ईमेल आईडी पर OTP भेज दिया गया है।
-        </div>
-
-        <input
-          type="text"
-          id="otpCode"
-          class="form-input otp-input"
-          placeholder="8-अंकों का OTP"
-          maxlength="8"
-          inputmode="numeric"
-          autocomplete="one-time-code"
-          required
-        >
-
-        <button
-          class="form-btn"
-          id="verifyOtpBtn"
-          style="background:#10b981;"
-          onclick="verifyEmailOTP()"
-        >
-          लॉग इन कन्फर्म करें
-        </button>
-
-        <button
-          class="back-btn"
-          onclick="backToEmailStep()"
-        >
-          ← Email बदलें
-        </button>
-
-      </div>
-
-      <div
-        id="modalMsg"
-        class="message"
-      ></div>
-
+<section id="loginSection">
+  <div class="card">
+    <div class="login-icon">
+      <i data-lucide="shield-check" size="28"></i>
     </div>
+    <div class="card-title">Admin Login</div>
+    <div class="card-sub">अपने registered admin Email से OTP लेकर Admin Panel में प्रवेश करें।</div>
+
+    <div id="loginStep1">
+      <input id="adminEmail" class="input" type="email" placeholder="Admin Email" autocomplete="email">
+      <button class="btn btn-primary btn-full" onclick="sendAdminOTP()">
+        <i data-lucide="mail" size="16"></i> OTP भेजें
+      </button>
+    </div>
+
+    <div id="loginStep2" class="hidden">
+      <input id="adminOTP" class="input" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit OTP" autocomplete="one-time-code">
+      <button class="btn btn-success btn-full" onclick="verifyAdminOTP()">
+        <i data-lucide="check-circle" size="16"></i> Verify & Login
+      </button>
+      <button class="btn btn-gray btn-full" style="margin-top:8px;" onclick="backToEmail()">
+        वापस Email बदलें
+      </button>
+    </div>
+
+    <div id="loginMsg" class="message"></div>
   </div>
-
-  <script>
-
-    /* =========================
-       LUCIDE ICONS
-    ========================= */
-
-    lucide.createIcons();
-
-
-    /* =========================
-       SUPABASE CONFIG
-    ========================= */
-
-    const SUPABASE_URL =
-      'https://oehwcamwefkngwbcxnlq.supabase.co';
-
-    const SUPABASE_ANON_KEY =
-      'Sb_publishable_4nRNt9HwR8oVK_cGOOSD_g_BgpgyIBj';
-
-
-    const supabaseClient =
-      supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-      );
-
-
-    /* =========================
-       APP STATE
-    ========================= */
-
-    let cart = [];
-
-    let allProducts = [];
-
-    let currentUser = null;
-
-
-    /* =========================
-       MESSAGE HELPER
-    ========================= */
-
-    function showMessage(text, color = '#9333ea') {
-
-      const msg =
-        document.getElementById('modalMsg');
-
-      msg.style.color = color;
-
-      msg.innerText = text;
-    }
-
-
-    /* =========================
-       SESSION CHECK
-    ========================= */
-
-    async function checkUserSession() {
-
-      const {
-        data: { session },
-        error
-      } =
-        await supabaseClient.auth.getSession();
-
-      if (error) {
-        console.error(
-          'Session error:',
-          error
-        );
-        return;
-      }
-
-      if (
-        session &&
-        session.user
-      ) {
-
-        currentUser = session.user;
-
-        updateLoginUI();
-
-      } else {
-
-        currentUser = null;
-
-        updateLoginUI();
-
-      }
-    }
-
-
-    /* =========================
-       UPDATE LOGIN UI
-    ========================= */
-
-    function updateLoginUI() {
-
-      const statusText =
-        document.getElementById(
-          'userStatusText'
-        );
-
-      if (currentUser) {
-
-        const email =
-          currentUser.email || '';
-
-        const username =
-          email.split('@')[0];
-
-        statusText.innerText =
-          username || 'Logged In';
-
-      } else {
-
-        statusText.innerText =
-          'Login';
-
-      }
-    }
-
-
-    /* =========================
-       AUTH STATE LISTENER
-    ========================= */
-
-    supabaseClient.auth.onAuthStateChange(
-      (event, session) => {
-
-        if (
-          session &&
-          session.user
-        ) {
-
-          currentUser =
-            session.user;
-
-        } else {
-
-          currentUser = null;
-
-        }
-
-        updateLoginUI();
-
-      }
-    );
-
-
-    /* =========================
-       OPEN LOGIN
-    ========================= */
-
-    function openLoginModal() {
-
-      if (currentUser) {
-
-        const email =
-          currentUser.email || '';
-
-        const logout =
-          confirm(
-            `आप ${email} से लॉग इन हैं। क्या लॉग आउट करना चाहते हैं?`
-          );
-
-        if (logout) {
-
-          supabaseClient.auth.signOut();
-
-        }
-
-        return;
-      }
-
-      document.getElementById(
-        'loginModal'
-      ).style.display = 'flex';
-
-      document.getElementById(
-        'otpStep1'
-      ).style.display = 'block';
-
-      document.getElementById(
-        'otpStep2'
-      ).style.display = 'none';
-
-      document.getElementById(
-        'modalMsg'
-      ).innerText = '';
-
-    }
-
-
-    /* =========================
-       CLOSE LOGIN
-    ========================= */
-
-    function closeLoginModal() {
-
-      document.getElementById(
-        'loginModal'
-      ).style.display = 'none';
-
-      document.getElementById(
-        'modalMsg'
-      ).innerText = '';
-
-    }
-
-
-    /* =========================
-       BACK TO EMAIL
-    ========================= */
-
-    function backToEmailStep() {
-
-      document.getElementById(
-        'otpStep1'
-      ).style.display = 'block';
-
-      document.getElementById(
-        'otpStep2'
-      ).style.display = 'none';
-
-      document.getElementById(
-        'otpCode'
-      ).value = '';
-
-      showMessage('');
-
-    }
-
-
-    /* =========================
-       SEND EMAIL OTP
-    ========================= */
-
-    async function sendEmailOTP() {
-
-      const email =
-        document
-          .getElementById('userEmail')
-          .value
-          .trim()
-          .toLowerCase();
-
-      const button =
-        document.getElementById(
-          'sendOtpBtn'
-        );
-
-
-      if (
-        !email ||
-        !email.includes('@')
-      ) {
-
-        showMessage(
-          'कृपया सही Email ID डालें!',
-          'red'
-        );
-
-        return;
-      }
-
-
-      button.disabled = true;
-
-      showMessage(
-        'OTP भेजा जा रहा है...',
-        '#9333ea'
-      );
-
-
-      try {
-
-        const {
-          error
-        } =
-          await supabaseClient.auth.signInWithOtp({
-            email: email,
-            options: {
-              shouldCreateUser: true
-            }
-          });
-
-
-        if (error) {
-
-          showMessage(
-            'त्रुटि: ' + error.message,
-            'red'
-          );
-
-          button.disabled = false;
-
-          return;
-        }
-
-
-        document.getElementById(
-          'otpStep1'
-        ).style.display = 'none';
-
-        document.getElementById(
-          'otpStep2'
-        ).style.display = 'block';
-
-
-        document.getElementById(
-          'otpSentSub'
-        ).innerText =
-          `${email} पर 8-अंकों का OTP भेज दिया गया है।`;
-
-
-        showMessage(
-          'OTP भेज दिया गया है। अपना Email Inbox चेक करें।',
-          '#10b981'
-        );
-
-
-      } catch (err) {
-
-        console.error(err);
-
-        showMessage(
-          'OTP भेजने में समस्या हुई।',
-          'red'
-        );
-
-      }
-
-
-      button.disabled = false;
-
-    }
-
-
-    /* =========================
-       VERIFY EMAIL OTP
-    ========================= */
-
-    async function verifyEmailOTP() {
-
-      const email =
-        document
-          .getElementById('userEmail')
-          .value
-          .trim()
-          .toLowerCase();
-
-      const token =
-        document
-          .getElementById('otpCode')
-          .value
-          .trim();
-
-      const button =
-        document.getElementById(
-          'verifyOtpBtn'
-        );
-
-
-      if (
-        !token ||
-        token.length !== 8 ||
-        !/^\d{8}$/.test(token)
-      ) {
-
-        showMessage(
-          'कृपया पूरा 8-अंकों का OTP दर्ज करें!',
-          'red'
-        );
-
-        return;
-      }
-
-
-      button.disabled = true;
-
-      showMessage(
-        'OTP सत्यापित किया जा रहा है...',
-        '#9333ea'
-      );
-
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient.auth.verifyOtp({
-
-            email: email,
-
-            token: token,
-
-            type: 'email'
-
-          });
-
-
-        if (error) {
-
-          console.error(
-            'OTP verification error:',
-            error
-  
+</section>
+
+<div id="adminApp">
+  <main class="container">
+    <div class="welcome">
+      <div class="welcome-title">👋 Welcome to LokBazaar Admin</div>
+      <div class="welcome-sub" id="adminEmailDisplay">Admin account</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-icon"><i data-lucide="package" size="20"></i></div>
+        <div class="stat-number" id="productCount">0</div>
+        <div class="stat-label">Total Products</div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon"><i data-lucide="store" size="20"></i></div>
+        <div class="stat-number" id="storeCount">0</div>
+        <div class="stat-label">Total Stores</div>
+      </div>
+      <div class="stat">
+        <div class="stat-icon"><i data-lucide="shield-check" size="20"></i></div>
+        <div class="stat-number">✓</div>
+        <div class="stat-label">Admin Verified</div>
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="section-header">
+        <div>
+          <div class="section-title">📦 Product Management</div>
+          <div class="section-sub">Product add, edit और delete करें</div>
+        </div>
+      </div>
+
+      <input type="hidden" id="productId">
+
+      <div class="form-grid">
+        <div><input id="productName" class="input" placeholder="Product Name"></div>
+        <div><input id="productPrice" class="input" type="number" min="0" placeholder="Price ₹"></div>
+        <div>
+          <select id="productCategory" class="input">
+            <option value="Women Fashion">Women Fashion</option>
+            <option value="Men Fashion">Men Fashion</option>
+            <option value="Footwear">Footwear</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Home Decor">Home Decor</option>
+          </select>
+        </div>
+        <div><input id="productImage" class="input" placeholder="Image URL (optional)"></div>
+        <div class="full">
+          <textarea id="productDescription" class="input" placeholder="Product Description"></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="saveProduct()">
+          <i data-lucide="save" size="16"></i>
+          <span id="productSaveText">Product Save करें</span>
+        </button>
+        <button class="btn btn-gray" onclick="clearProductForm()">Clear</button>
+      </div>
+
+      <div class="items">
+        <div id="productsList" class="loading">Products load हो रहे हैं...</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="section-header">
+        <div>
+          <div class="section-title">🏪 Store Management</div>
+          <div class="section-sub">Store add, edit और delete करें</div>
+        </div>
+      </div>
+
+      <input type="hidden" id="storeId">
+
+      <div class="form-grid">
+        <div><input id="storeName" class="input" placeholder="Store Name"></div>
+        <div><input id="storeRadius" class="input" type="number" min="0" step="0.1" placeholder="Delivery Radius KM"></div>
+        <div class="full"><input id="storeAddress" class="input" placeholder="Store Address"></div>
+        <div><input id="storeLatitude" class="input" type="number" step="any" placeholder="Latitude (optional)"></div>
+        <div><input id="storeLongitude" class="input" type="number" step="any" placeholder="Longitude (optional)"></div>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-primary" onclick="saveStore()">
+          <i data-lucide="save" size="16"></i>
+          <span id="storeSaveText">Store Save करें</span>
+        </button>
+        <button class="btn btn-gray" onclick="clearStoreForm()">Clear</button>
+      </div>
+
+      <div class="items">
+        <div id="storesList" class="loading">Stores load हो रहे हैं...</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <button class="btn btn-gray btn-full" onclick="refreshDashboard()">
+        <i data-lucide="refresh-cw" size="16"></i> Dashboard Refresh करें
+      </button>
+    </section>
+  </main>
+    </div>
+
+<script>
+/* =====================================================
+   SUPABASE CONFIG
+===================================================== */
+const SUPABASE_URL = 'https://oehwcamwefkngwbcxnlq.supabase.co';
+const SUPABASE_ANON_KEY = 'Sb_publishable_4nRNt9HwR8oVK_cGOOSD_g_BgpgyIBj';
+
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+/* =====================================================
+   GLOBAL
+===================================================== */
+let currentUser = null;
+let productsCache = [];
+let storesCache = [];
+
+/* =====================================================
+   INITIALIZE ICONS
+===================================================== */
+lucide.createIcons();
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+function setLoginMessage(text, color = '#9333ea') {
+  const msg = document.getElementById('loginMsg');
+  msg.style.color = color;
+  msg.innerText = text;
+}
+
+/* =====================================================
+   SEND ADMIN OTP
+===================================================== */
+async function sendAdminOTP() {
+  const email = document.getElementById('adminEmail').value.trim();
+
+  if (!email || !email.includes('@')) {
+    setLoginMessage('कृपया सही Email ID डालें।', '#ef4444');
+    return;
+  }
+
+  setLoginMessage('OTP भेजा जा रहा है...', '#9333ea');
+
+  const { error } = await supabaseClient.auth.signInWithOtp({ email: email });
+
+  if (error) {
+    setLoginMessage('OTP Error: ' + error.message, '#ef4444');
+    return;
+  }
+
+  document.getElementById('loginStep1').classList.add('hidden');
+  document.getElementById('loginStep2').classList.remove('hidden');
+  setLoginMessage(email + ' पर OTP भेज दिया गया है।', '#10b981');
+}
+
+/* =====================================================
+   BACK TO EMAIL
+===================================================== */
+function backToEmail() {
+  document.getElementById('loginStep2').classList.add('hidden');
+  document.getElementById('loginStep1').classList.remove('hidden');
+  document.getElementById('adminOTP').value = '';
+  setLoginMessage('');
+}
+
+/* =====================================================
+   VERIFY ADMIN OTP
+===================================================== */
+async function verifyAdminOTP() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const token = document.getElementById('adminOTP').value.trim();
+
+  if (!token || token.length !== 6) {
+    setLoginMessage('6-digit OTP दर्ज करें।', '#ef4444');
+    return;
+  }
+
+  setLoginMessage('OTP verify हो रहा है...', '#9333ea');
+
+  const { data, error } = await supabaseClient.auth.verifyOtp({
+    email: email,
+    token: token,
+    type: 'email'
+  });
+
+  if (error) {
+    setLoginMessage('OTP Error: ' + error.message, '#ef4444');
+    return;
+  }
+
+  currentUser = data.user;
+  showAdminApp();
+}
+
+/* =====================================================
+   AUTH STATE & SESSION
+===================================================== */
+async function checkSession() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  if (session && session.user) {
+    currentUser = session.user;
+    showAdminApp();
+  } else {
+    showLogin();
+  }
+}
+
+function showLogin() {
+  document.getElementById('loginSection').classList.remove('hidden');
+  document.getElementById('adminApp').style.display = 'none';
+}
+
+function showAdminApp() {
+  document.getElementById('loginSection').classList.add('hidden');
+  document.getElementById('adminApp').style.display = 'block';
+
+  if (currentUser && currentUser.email) {
+    document.getElementById('adminEmailDisplay').innerText = currentUser.email;
+  }
+
+  refreshDashboard();
+}
+
+async function logout() {
+  await supabaseClient.auth.signOut();
+  currentUser = null;
+  showLogin();
+}
+
+/* =====================================================
+   DASHBOARD & DATA FETCH
+===================================================== */
+async function refreshDashboard() {
+  await Promise.all([
+    fetchProducts(),
+    fetchStores()
+  ]);
+  lucide.createIcons();
+}
+
+/* =====================================================
+   PRODUCTS LOGIC
+===================================================== */
+async function fetchProducts() {
+  const listEl = document.getElementById('productsList');
+  listEl.className = 'loading';
+  listEl.innerText = 'Products load हो रहे हैं...';
+
+  const { data, error } = await supabaseClient
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    listEl.className = 'empty';
+    listEl.innerText = 'Products load करने में त्रुटि: ' + error.message;
+    return;
+  }
+
+  productsCache = data || [];
+  document.getElementById('productCount').innerText = productsCache.length;
+  renderProducts();
+}
+
+function renderProducts() {
+  const listEl = document.getElementById('productsList');
+
+  if (productsCache.length === 0) {
+    listEl.className = 'empty';
+    listEl.innerText = 'कोई Products मौजूद नहीं हैं।';
+    return;
+  }
+
+  listEl.className = '';
+  listEl.innerHTML = productsCache.map(p => `
+    <div class="item">
+      <div class="item-top">
+        <div>
+          <div class="item-name">${escapeHtml(p.name || 'No Name')}</div>
+          <span class="badge">${escapeHtml(p.category || 'General')}</span>
+        </div>
+        <div class="item-price">₹${p.price || 0}</div>
+      </div>
+      <div class="item-details">
+        ${escapeHtml(p.description || 'कोई विवरण नहीं')}
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-gray small-btn" onclick="editProduct('${p.id}')">
+          <i data-lucide="edit" size="13"></i> Edit
+        </button>
+        <button class="btn btn-danger small-btn" onclick="deleteProduct('${p.id}')">
+          <i data-lucide="trash-2" size="13"></i> Delete
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  lucide.createIcons();
+}
+
+async function saveProduct() {
+  const id = document.getElementById('productId').value;
+  const name = document.getElementById('productName').value.trim();
+  const price = parseFloat(document.getElementById('productPrice').value) || 0;
+  const category = document.getElementById('productCategory').value;
+  const image_url = document.getElementById('productImage').value.trim();
+  const description = document.getElementById('productDescription').value.trim();
+
+  if (!name) {
+    alert('कृपया Product Name दर्ज करें।');
+    return;
+  }
+
+  const payload = { name, price, category, image_url, description };
+  let error = null;
+
+  if (id) {
+    const res = await supabaseClient.from('products').update(payload).eq('id', id);
+    error = res.error;
+  } else {
+    const res = await supabaseClient.from('products').insert([payload]);
+    error = res.error;
+  }
+
+  if (error) {
+    alert('Error saving product: ' + error.message);
+    return;
+  }
+
+  clearProductForm();
+  fetchProducts();
+}
+
+function editProduct(id) {
+  const p = productsCache.find(item => item.id === id);
+  if (!p) return;
+
+  document.getElementById('productId').value = p.id;
+  document.getElementById('productName').value = p.name || '';
+  document.getElementById('productPrice').value = p.price || '';
+  document.getElementById('productCategory').value = p.category || 'Women Fashion';
+  document.getElementById('productImage').value = p.image_url || '';
+  document.getElementById('productDescription').value = p.description || '';
+  document.getElementById('productSaveText').innerText = 'Product Update करें';
+}
+
+async function deleteProduct(id) {
+  if (!confirm('क्या आप सच में यह Product हटाना चाहते हैं?')) return;
+
+  const { error } = await supabaseClient.from('products').delete().eq('id', id);
+
+  if (error) {
+    alert('Error deleting product: ' + error.message);
+    return;
+  }
+
+  fetchProducts();
+}
+
+function clearProductForm() {
+  document.getElementById('productId').value = '';
+  document.getElementById('productName').value = '';
+  document.getElementById('productPrice').value = '';
+  document.getElementById('productCategory').selectedIndex = 0;
+  document.getElementById('productImage').value = '';
+  document.getElementById('productDescription').value = '';
+  document.getElementById('productSaveText').innerText = 'Product Save करें';
+}
+
+/* =====================================================
+   STORES LOGIC
+===================================================== */
+async function fetchStores() {
+  const listEl = document.getElementById('storesList');
+  listEl.className = 'loading';
+  listEl.innerText = 'Stores load हो रहे हैं...';
+
+  const { data, error } = await supabaseClient
+    .from('stores')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    listEl.className = 'empty';
+    listEl.innerText = 'Stores load करने में त्रुटि: ' + error.message;
+    return;
+  }
+
+  storesCache = data || [];
+  document.getElementById('storeCount').innerText = storesCache.length;
+  renderStores();
+}
+
+function renderStores() {
+  const listEl = document.getElementById('storesList');
+
+  if (storesCache.length === 0) {
+    listEl.className = 'empty';
+    listEl.innerText = 'कोई Stores मौजूद नहीं हैं।';
+    return;
+  }
+
+  listEl.className = '';
+  listEl.innerHTML = storesCache.map(s => `
+    <div class="item">
+      <div class="item-top">
+        <div>
+          <div class="item-name">${escapeHtml(s.name || 'No Name')}</div>
+          <span class="badge">Radius: ${s.radius || 0} KM</span>
+        </div>
+      </div>
+      <div class="item-details">
+        📍 ${escapeHtml(s.address || 'कोई पता नहीं')}
+        ${s.latitude && s.longitude ? `<br>🌐 Lat: ${s.latitude}, Lng: ${s.longitude}` : ''}
+      </div>
+      <div class="item-actions">
+        <button class="btn btn-gray small-btn" onclick="editStore('${s.id}')">
+          <i data-lucide="edit" size="13"></i> Edit
+        </button>
+        <button class="btn btn-danger small-btn" onclick="deleteStore('${s.id}')">
+          <i data-lucide="trash-2" size="13"></i> Delete
+        </button>
+      </div>
+    </div>
+  `).join('');
+
+  lucide.createIcons();
+}
+
+async function saveStore() {
+  const id = document.getElementById('storeId').value;
+  const name = document.getElementById('storeName').value.trim();
+  const radius = parseFloat(document.getElementById('storeRadius').value) || 0;
+  const address = document.getElementById('storeAddress').value.trim();
+  const latitude = parseFloat(document.getElementById('storeLatitude').value) || null;
+  const longitude = parseFloat(document.getElementById('storeLongitude').value) || null;
+
+  if (!name) {
+    alert('कृपया Store Name दर्ज करें।');
+    return;
+  }
+
+  const payload = { name, radius, address, latitude, longitude };
+  let error = null;
+
+  if (id) {
+    const res = await supabaseClient.from('stores').update(payload).eq('id', id);
+    error = res.error;
+  } else {
+    const res = await supabaseClient.from('stores').insert([payload]);
+    error = res.error;
+  }
+
+  if (error) {
+    alert('Error saving store: ' + error.message);
+    return;
+  }
+
+  clearStoreForm();
+  fetchStores();
+}
+
+function editStore(id) {
+  const s = storesCache.find(item => item.id === id);
+  if (!s) return;
+
+  document.getElementById('storeId').value = s.id;
+  document.getElementById('storeName').value = s.name || '';
+  document.getElementById('storeRadius').value = s.radius || '';
+  document.getElementById('storeAddress').value = s.address || '';
+  document.getElementById('storeLatitude').value = s.latitude || '';
+  document.getElementById('storeLongitude').value = s.longitude || '';
+  document.getElementById('storeSaveText').innerText = 'Store Update करें';
+}
+
+async function deleteStore(id) {
+  if (!confirm('क्या आप सच में यह Store हटाना चाहते हैं?')) return;
+
+  const { error } = await supabaseClient.from('stores').delete().eq('id', id);
+
+  if (error) {
+    alert('Error deleting store: ' + error.message);
+    return;
+  }
+
+  fetchStores();
+}
+
+function clearStoreForm() {
+  document.getElementById('storeId').value = '';
+  document.getElementById('storeName').value = '';
+  document.getElementById('storeRadius').value = '';
+  document.getElementById('storeAddress').value = '';
+  document.getElementById('storeLatitude').value = '';
+  document.getElementById('storeLongitude').value = '';
+  document.getElementById('storeSaveText').innerText = 'Store Save करें';
+}
+
+/* =====================================================
+   HELPERS & INIT
+===================================================== */
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  checkSession();
+});
+</script>
+
+</body>
+</html>
