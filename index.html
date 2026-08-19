@@ -26,19 +26,8 @@
       --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text-main);
-      padding-bottom: 90px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background: var(--bg); color: var(--text-main); padding-bottom: 90px; }
 
     header {
       background: linear-gradient(135deg, #9333ea, #6366f1);
@@ -50,270 +39,88 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
 
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    .logo-box h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+    .logo-box p { font-size: 11px; color: #e9d5ff; }
 
-    .logo-box h1 {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-
-    .logo-box p {
-      font-size: 11px;
-      color: #e9d5ff;
-    }
-
-    .location-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .auth-btn {
       background: rgba(255, 255, 255, 0.2);
-      padding: 6px 12px;
+      border: none;
+      color: white;
+      padding: 6px 14px;
       border-radius: 20px;
       font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
       backdrop-filter: blur(8px);
-    }
-
-    .search-wrapper {
-      padding: 14px 20px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .search-bar {
       display: flex;
       align-items: center;
-      background: #f8fafc;
-      padding: 12px 16px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      transition: all 0.2s ease;
+      gap: 5px;
     }
 
-    .search-bar:focus-within {
-      border-color: var(--primary);
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.15);
+    .search-wrapper { padding: 14px 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
+    .search-bar {
+      display: flex; align-items: center; background: #f8fafc; padding: 12px 16px;
+      border-radius: var(--radius-md); border: 1px solid var(--border);
     }
-
-    .search-bar input {
-      border: none;
-      background: transparent;
-      outline: none;
-      width: 100%;
-      margin-left: 10px;
-      font-size: 14px;
-      color: var(--text-main);
-    }
+    .search-bar input { border: none; background: transparent; outline: none; width: 100%; margin-left: 10px; font-size: 14px; }
 
     .categories {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding: 12px 20px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      scrollbar-width: none;
+      display: flex; gap: 10px; overflow-x: auto; padding: 12px 20px;
+      background: var(--surface); border-bottom: 1px solid var(--border); scrollbar-width: none;
     }
-
-    .categories::-webkit-scrollbar {
-      display: none;
-    }
-
     .chip {
-      white-space: nowrap;
-      padding: 8px 16px;
-      background: #f1f5f9;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s;
+      white-space: nowrap; padding: 8px 16px; background: #f1f5f9; border-radius: 20px;
+      font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer;
     }
+    .chip.active, .chip:hover { background: var(--primary); color: white; }
 
-    .chip.active, .chip:hover {
-      background: var(--primary);
-      color: white;
-    }
+    .container { padding: 16px 20px; max-width: 600px; margin: 0 auto; }
+    .section-header { margin-bottom: 12px; }
+    .section-title { font-size: 17px; font-weight: 700; color: var(--text-main); }
+    .section-sub { font-size: 12px; color: var(--text-muted); }
 
-    .container {
-      padding: 16px 20px;
-      max-width: 600px;
-      margin: 0 auto;
-    }
+    .stores-grid { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; }
+    .store-card { min-width: 210px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; box-shadow: var(--shadow-sm); }
+    .store-name { font-size: 15px; font-weight: 700; }
+    .store-info { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; margin-top: 6px; }
 
-    .section-header {
-      margin-bottom: 12px;
-    }
-
-    .section-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .section-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .stores-grid {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      scrollbar-width: none;
-    }
-
-    .store-card {
-      min-width: 210px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 14px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .store-name {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .store-info {
-      font-size: 12px;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin-top: 6px;
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 14px;
-    }
-
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
     .product-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.15s ease;
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 12px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm);
     }
-
-    .product-card:active {
-      transform: scale(0.98);
-    }
-
-    .badge-tag {
-      align-self: flex-start;
-      background: #f3e8ff;
-      color: var(--primary);
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 6px;
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-
-    .product-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text-main);
-      line-height: 1.3;
-    }
-
-    .product-desc {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    .product-price-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
-
-    .product-price {
-      font-size: 16px;
-      font-weight: 800;
-      color: #059669;
-    }
-
-    .add-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: var(--radius-md);
-      font-weight: 700;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
+    .badge-tag { background: #f3e8ff; color: var(--primary); font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 6px; margin-bottom: 6px; text-transform: uppercase; }
+    .product-title { font-size: 14px; font-weight: 600; line-height: 1.3; }
+    .product-desc { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+    .product-price-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+    .product-price { font-size: 16px; font-weight: 800; color: #059669; }
+    .add-btn { background: var(--primary); color: white; border: none; padding: 8px 12px; border-radius: var(--radius-md); font-weight: 700; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 
     .cart-bar {
-      position: fixed;
-      bottom: 16px;
-      left: 16px;
-      right: 16px;
-      max-width: 560px;
-      margin: 0 auto;
-      background: #0f172a;
-      color: white;
-      padding: 12px 18px;
-      border-radius: var(--radius-lg);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow-md);
-      z-index: 99;
+      position: fixed; bottom: 16px; left: 16px; right: 16px; max-width: 560px; margin: 0 auto;
+      background: #0f172a; color: white; padding: 12px 18px; border-radius: var(--radius-lg);
+      display: flex; justify-content: space-between; align-items: center; box-shadow: var(--shadow-md); z-index: 99;
     }
+    .cart-count-badge { background: var(--accent); color: white; padding: 4px 8px; border-radius: 8px; font-size: 12px; font-weight: 700; }
+    .checkout-btn { background: var(--success); color: white; border: none; padding: 10px 16px; border-radius: var(--radius-md); font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; }
 
-    .cart-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    /* Email OTP Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px);
+      display: none; justify-content: center; align-items: center; z-index: 200; padding: 20px;
     }
-
-    .cart-count-badge {
-      background: var(--accent);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
+    .modal-card {
+      background: white; border-radius: 20px; padding: 24px; width: 100%; max-width: 400px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); position: relative;
     }
-
-    .checkout-btn {
-      background: var(--success);
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: var(--radius-md);
-      font-weight: 700;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-    }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; cursor: pointer; color: var(--text-muted); }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .modal-sub { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+    .form-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; margin-bottom: 12px; outline: none; }
+    .form-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -324,9 +131,11 @@
         <h1>LokBazaar</h1>
         <p>Fashion, Lifestyle & Home Collections</p>
       </div>
-      <div class="location-badge">
-        <i data-lucide="map-pin" size="14"></i>
-        <span>Jaipur, RJ</span>
+      <div class="header-actions">
+        <button class="auth-btn" id="loginHeaderBtn" onclick="openLoginModal()">
+          <i data-lucide="mail" size="14"></i>
+          <span id="userStatusText">Login</span>
+        </button>
       </div>
     </div>
   </header>
@@ -334,18 +143,17 @@
   <div class="search-wrapper">
     <div class="search-bar">
       <i data-lucide="search" size="18" color="#64748b"></i>
-      <input type="text" id="searchInput" placeholder="Search Saree, Jeans, Shirts, Shoes, Decor... / कपड़े, जूते खोजें" onkeyup="filterItems()">
+      <input type="text" id="searchInput" placeholder="Search Saree, Jeans, Shoes, Decor..." onkeyup="filterItems()">
     </div>
   </div>
 
   <div class="categories">
     <div class="chip active" onclick="filterCategory('All')">All Items / सब</div>
-    <div class="chip" onclick="filterCategory('Women Fashion')">👗 Women Wear (साड़ी, कुर्ती)</div>
-    <div class="chip" onclick="filterCategory('Men Fashion')">👔 Men Wear (शर्ट, जीन्स)</div>
-    <div class="chip" onclick="filterCategory('Footwear')">👟 Footwear (जूते, चप्पल)</div>
-    <div class="chip" onclick="filterCategory('Furniture')">🛋️ Furniture (पलंग, सोफा)</div>
-    <div class="chip" onclick="filterCategory('Home Decor')">✨ Fancy Lighting & Decor</div>
-    <div class="chip" onclick="filterCategory('Electronics')">🎧 Electronics & Gadgets</div>
+    <div class="chip" onclick="filterCategory('Women Fashion')">👗 Women Wear</div>
+    <div class="chip" onclick="filterCategory('Men Fashion')">👔 Men Wear</div>
+    <div class="chip" onclick="filterCategory('Footwear')">👟 Footwear</div>
+    <div class="chip" onclick="filterCategory('Furniture')">🛋️ Furniture</div>
+    <div class="chip" onclick="filterCategory('Home Decor')">✨ Home Decor</div>
   </div>
 
   <div class="container">
@@ -358,14 +166,15 @@
     </div>
 
     <div class="section-header" style="margin-top: 24px;">
-      <div class="section-title">🛍️ Trending Catalog / फ़ैशन और सामान</div>
-      <div class="section-sub">Meesho & Amazon Style Direct Inventory</div>
+      <div class="section-title">🛍️ Trending Catalog</div>
+      <div class="section-sub">Direct Inventory</div>
     </div>
     <div class="products-grid" id="productsList">
       <p style="font-size:13px; color:#64748b;">Loading products...</p>
     </div>
   </div>
 
+  <!-- Cart Bar -->
   <div class="cart-bar" id="cartBar">
     <div class="cart-info">
       <span class="cart-count-badge" id="cartCount">0 Items</span>
@@ -374,57 +183,171 @@
         <div style="font-size: 15px; font-weight: 700;">₹<span id="cartTotal">0</span></div>
       </div>
     </div>
-    <button class="checkout-btn" onclick="alert('Order Engine Ready!')">
+    <button class="checkout-btn" onclick="handleCheckout()">
       <span>Buy Now</span>
       <i data-lucide="arrow-right" size="16"></i>
     </button>
   </div>
 
+  <!-- Email OTP Login Modal -->
+  <div class="modal-overlay" id="loginModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeLoginModal()"><i data-lucide="x" size="20"></i></button>
+
+      <!-- Step 1: Send OTP -->
+      <div id="otpStep1">
+        <div class="modal-title">📩 Email ID से लॉग इन करें</div>
+        <div class="modal-sub">आपकी ईमेल पर 6-डिजिट का सुरक्षा OTP भेजा जाएगा।</div>
+        <input type="email" id="userEmail" class="form-input" placeholder="अपनी Email ID दर्ज करें (e.g. user@gmail.com)" required>
+        <button class="form-btn" onclick="sendEmailOTP()">OTP भेजें</button>
+      </div>
+
+      <!-- Step 2: Verify OTP -->
+      <div id="otpStep2" style="display: none;">
+        <div class="modal-title">🔑 OTP दर्ज करें</div>
+        <div class="modal-sub" id="otpSentSub">आपकी ईमेल आईडी पर OTP भेज दिया गया है।</div>
+        <input type="text" id="otpCode" class="form-input" placeholder="6-डिजिट OTP लिखें" maxlength="6" required>
+        <button class="form-btn" style="background:#10b981;" onclick="verifyEmailOTP()">लॉग इन कन्फर्म करें</button>
+      </div>
+
+      <div id="modalMsg" style="margin-top:12px; font-size:12px; font-weight:600; text-align:center;"></div>
+    </div>
+  </div>
+
   <script>
     lucide.createIcons();
 
-    // Live Connected Credentials
+    // Configured Supabase Credentials
     const SUPABASE_URL = 'https://oehwcamwefkngwbcxnlq.supabase.co';
     const SUPABASE_ANON_KEY = 'Sb_publishable_4nRNt9HwR8oVK_cGOOSD_g_BgpgyIBj';
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    
+    // Supabase Client Initialization
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let cart = [];
     let allProducts = [];
+    let currentUser = null;
+
+    async function checkUserSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session && session.user) {
+        currentUser = session.user;
+        document.getElementById('userStatusText').innerText = currentUser.email.split('@')[0];
+      }
+    }
+
+    function openLoginModal() {
+      if (currentUser) {
+        if(confirm(`आप ${currentUser.email} से लॉग इन हैं। लॉग आउट करना चाहते हैं?`)) {
+          supabaseClient.auth.signOut();
+          location.reload();
+        }
+        return;
+      }
+      document.getElementById('loginModal').style.display = 'flex';
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').style.display = 'none';
+    }
+
+    async function sendEmailOTP() {
+      const email = document.getElementById('userEmail').value.trim();
+      const msg = document.getElementById('modalMsg');
+      
+      if (!email || !email.includes('@')) {
+        msg.style.color = 'red';
+        msg.innerText = 'कृपया सही Email ID डालें!';
+        return;
+      }
+
+      msg.style.color = '#9333ea';
+      msg.innerText = 'OTP भेजा जा रहा है...';
+
+      const { error } = await supabaseClient.auth.signInWithOtp({ email });
+
+      if (error) {
+        msg.style.color = 'red';
+        msg.innerText = 'त्रुटि: ' + error.message;
+      } else {
+        document.getElementById('otpStep1').style.display = 'none';
+        document.getElementById('otpStep2').style.display = 'block';
+        document.getElementById('otpSentSub').innerText = `${email} पर कोड भेजा गया है।`;
+        msg.innerText = '';
+      }
+    }
+
+    async function verifyEmailOTP() {
+      const email = document.getElementById('userEmail').value.trim();
+      const token = document.getElementById('otpCode').value.trim();
+      const msg = document.getElementById('modalMsg');
+
+      if (!token || token.length < 6) {
+        msg.style.color = 'red';
+        msg.innerText = '6-अंकों का सही OTP दर्ज करें!';
+        return;
+      }
+
+      msg.style.color = '#9333ea';
+      msg.innerText = 'सत्यापित किया जा रहा है...';
+
+      const { data, error } = await supabaseClient.auth.verifyOtp({
+        email,
+        token,
+        type: 'email'
+      });
+
+      if (error) {
+        msg.style.color = 'red';
+        msg.innerText = 'गलत OTP: ' + error.message;
+      } else {
+        msg.style.color = 'green';
+        msg.innerText = '🎉 सफलतापूर्वक लॉग इन हो गए!';
+        currentUser = data.user;
+        setTimeout(() => {
+          closeLoginModal();
+          checkUserSession();
+        }, 1000);
+      }
+    }
+
+    function handleCheckout() {
+      if (!currentUser) {
+        alert('ऑर्डर पूरा करने के लिए कृपया पहले Email से लॉग इन करें!');
+        openLoginModal();
+        return;
+      }
+      if (cart.length === 0) {
+        alert('आपकी कार्ट खाली है!');
+        return;
+      }
+      alert(`🎉 बधाई हो ${currentUser.email}! आपका ₹${document.getElementById('cartTotal').innerText} का ऑर्डर बुक हो गया है।`);
+    }
 
     async function fetchStores() {
-      const { data, error } = await supabase.from('stores').select('*');
+      const { data, error } = await supabaseClient.from('stores').select('*');
       const container = document.getElementById('storesList');
-
       if (error || !data || data.length === 0) {
         container.innerHTML = '<div class="store-card"><p style="font-size:13px; color:#94a3b8;">No outlets nearby.</p></div>';
         return;
       }
-
       container.innerHTML = data.map(store => `
         <div class="store-card">
           <div class="store-name">${store.store_name}</div>
-          <div class="store-info">
-            <i data-lucide="map-pin" size="12"></i>
-            <span>${store.address}</span>
-          </div>
-          <div class="store-info" style="color:#10b981;">
-            <i data-lucide="truck" size="12"></i>
-            <span>${store.service_radius_km} KM Express Delivery</span>
-          </div>
+          <div class="store-info"><i data-lucide="map-pin" size="12"></i><span>${store.address}</span></div>
+          <div class="store-info" style="color:#10b981;"><i data-lucide="truck" size="12"></i><span>${store.service_radius_km} KM Delivery</span></div>
         </div>
       `).join('');
       lucide.createIcons();
     }
 
     async function fetchProducts() {
-      const { data, error } = await supabase.from('products').select('*');
+      const { data, error } = await supabaseClient.from('products').select('*');
       const container = document.getElementById('productsList');
-
       if (error || !data || data.length === 0) {
         container.innerHTML = '<p style="font-size:13px; color:#64748b;">No products found.</p>';
         return;
       }
-
       allProducts = data;
       renderProducts(allProducts);
     }
@@ -441,8 +364,7 @@
           <div class="product-price-row">
             <div class="product-price">₹${p.price}</div>
             <button class="add-btn" onclick="addToCart('${p.name}', ${p.price})">
-              <i data-lucide="shopping-bag" size="12"></i>
-              <span>Add</span>
+              <i data-lucide="shopping-bag" size="12"></i><span>Add</span>
             </button>
           </div>
         </div>
@@ -452,37 +374,22 @@
 
     function addToCart(name, price) {
       cart.push({ name, price });
-      updateCartUI();
-    }
-
-    function updateCartUI() {
       document.getElementById('cartCount').innerText = `${cart.length} Items`;
-      const total = cart.reduce((sum, item) => sum + item.price, 0);
-      document.getElementById('cartTotal').innerText = total;
+      document.getElementById('cartTotal').innerText = cart.reduce((sum, item) => sum + item.price, 0);
     }
 
     function filterItems() {
       const query = document.getElementById('searchInput').value.toLowerCase();
-      const filtered = allProducts.filter(p => 
-        p.name.toLowerCase().includes(query) || 
-        (p.category && p.category.toLowerCase().includes(query))
-      );
-      renderProducts(filtered);
+      renderProducts(allProducts.filter(p => p.name.toLowerCase().includes(query)));
     }
 
     function filterCategory(cat) {
-      if (cat === 'All') {
-        renderProducts(allProducts);
-      } else {
-        const filtered = allProducts.filter(p => p.category === cat);
-        renderProducts(filtered);
-      }
+      renderProducts(cat === 'All' ? allProducts : allProducts.filter(p => p.category === cat));
     }
 
+    checkUserSession();
     fetchStores();
     fetchProducts();
   </script>
-
 </body>
-      </html>
-      
+</html>
